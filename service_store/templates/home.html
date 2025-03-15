@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to Service Store!</h1>
+    <p class="lead">Your one-stop shop for event organization services.</p>
+    <hr class="my-4">
+    <p>Explore our services, book events, and manage your bookings seamlessly.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'event_list' %}" role="button">View Events</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Easy Booking</h2>
+        <p>Book events with just a few clicks. Manage your bookings effortlessly.</p>
+    </div>
+    <div class="col-md-4">
+        <h2>Wide Range of Services</h2>
+        <p>From weddings to corporate events, we've got you covered.</p>
+    </div>
+    <div class="col-md-4">
+        <h2>Customer Support</h2>
+        <p>Our team is here to help you 24/7. Contact us anytime!</p>
+    </div>
+</div>
+{% endblock %}

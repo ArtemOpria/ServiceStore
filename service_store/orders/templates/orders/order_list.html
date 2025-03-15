@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>My Orders</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Event</th>
+            <th>Order Date</th>
+            <th>Total Price</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+            <tr>
+                <td><a href="{% url 'order_detail' order.id %}">{{ order.id }}</a></td>
+                <td>{{ order.event.name }}</td>
+                <td>{{ order.order_date }}</td>
+                <td>${{ order.total_price }}</td>
+                <td>{{ order.status }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
