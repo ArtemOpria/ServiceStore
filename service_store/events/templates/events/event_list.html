@@ -1,15 +1,72 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="page-header">
+    <div class="page-header-overlay">
+        <div class="container">
+            <h1>Каталог</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Головна</a></li>
+                    <li class="breadcrumb-item active">Каталог</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
 {% block content %}
-<h1>Events</h1>
-<ul>
-{#    {% for event in events %}#}
-        <li>
-            just list element
-        </li>
-{#    <li>#}
-{#        <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>#}
-{#    </li>#}
-{#    {% endfor %}#}
-</ul>
+<div class="container">
+    <div class="filter-section">
+        <div class="filter-controls">
+            <button class="btn btn-filter"><i class="fas fa-filter"></i> Фільтр</button>
+            <button class="btn btn-grid active"><i class="fas fa-th"></i></button>
+            <button class="btn btn-list"><i class="fas fa-list"></i></button>
+        </div>
+        <div class="view-controls">
+            <select class="form-select">
+                <option value="16">16 на сторінці</option>
+                <option value="32">32 на сторінці</option>
+                <option value="48">48 на сторінці</option>
+            </select>
+            <select class="form-select">
+                <option>За замовчуванням</option>
+                <option>За ціною</option>
+                <option>За популярністю</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="products-grid">
+        {% for i in '123456'|make_list %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{% static 'images/placeholder.jpg' %}" alt="Product">
+                <div class="product-overlay">
+                    <button class="btn btn-primary"><i class="fas fa-shopping-cart"></i></button>
+                    <button class="btn btn-light"><i class="fas fa-heart"></i></button>
+                </div>
+                <span class="badge bg-success">Новинка</span>
+            </div>
+            <div class="product-info">
+                <h3>Декор "Весняний"</h3>
+                <p class="price">2500 грн</p>
+                <p class="description">Чудовий весняний декор для вашого свята</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <nav class="pagination-container">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+        </ul>
+    </nav>
+</div>
 {% endblock %}

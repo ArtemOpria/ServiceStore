@@ -10,6 +10,6 @@ service_store/*/migrations/*
 !service_store/*/migrations/0001_initial.py
 
 # Ignore __pycache__ directories
-*/__pycache__/
+service_store/*/__pycache__/
 
 .env

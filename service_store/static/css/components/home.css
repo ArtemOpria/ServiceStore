@@ -1,0 +1,101 @@
+.hero-section {
+  position: relative;
+  height: 70vh;
+  width: 100%;
+  background: url("../../../static/images/flowers-bg.jpg") center/cover no-repeat;
+  margin-top: 0;
+}
+
+.hero-section .hero-overlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(8, 8, 8, 0.6), rgba(87, 87, 87, 0.65));
+}
+
+.hero-section .hero-content {
+  position: absolute;
+  background: linear-gradient(to right, rgba(24, 112, 46, 0.8), rgba(66, 155, 87, 0.85));
+  border: 0.5px solid rgba(24, 112, 46);
+  border-radius: 15px;
+  right: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 90%;
+  max-width: 35rem;
+  padding: 2rem;
+  z-index: 1;
+}
+
+.hero-section .hero-content h1 {
+  color: #ffffff;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-section .hero-content .lead {
+  color: #ffffff;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-section .hero-content .lead-2 {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 1.2rem;
+}
+
+.hero-section .hero-content .btn-primary {
+  background-color: #337c37;
+  border-color: #337c37;
+  padding: 0.75rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.hero-section .hero-content .btn-primary:hover {
+  background-color: #2e6b31;
+  border-color: #2e6b31;
+  transform: translateY(-2px);
+}
+
+.services-section {
+  padding: 4rem 0;
+}
+
+.card {
+  border: none;
+  padding: 2rem;
+  text-align: center;
+  background: #ffffff;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card i {
+  color: #337c37 !important;
+  margin-bottom: 1.5rem;
+}
+
+.card h2 {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.card p {
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    right: 50%;
+    transform: translate(50%, -50%);
+    width: 90%;
+    text-align: center;
+    padding: 2rem;
+  }
+}
