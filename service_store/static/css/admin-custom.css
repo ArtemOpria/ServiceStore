@@ -1,0 +1,163 @@
+/* Custom Admin Styles with Green Theme */
+
+/* Main background and text colors */
+:root {
+    --primary-color: #2e7d32; /* Dark green */
+    --secondary-color: #4caf50; /* Medium green */
+    --accent-color: #81c784; /* Light green */
+    --text-color: #ffffff;
+    --link-color: #e8f5e9;
+    --hover-color: #c8e6c9;
+}
+
+/* Header styles */
+#header {
+    background: var(--primary-color);
+    color: var(--text-color);
+}
+
+#header a:link, #header a:visited {
+    color: var(--text-color);
+}
+
+#header a:hover {
+    color: var(--hover-color);
+}
+
+/* User tools */
+#user-tools a {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#user-tools a:hover {
+    color: var(--hover-color);
+    border-bottom-color: var(--hover-color);
+}
+
+/* Module headers */
+.module h2, .module caption, .inline-group h2 {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+/* Links */
+a:link, a:visited {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+/* Buttons */
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover {
+    background: var(--primary-color);
+}
+
+.button.default, input[type=submit].default, .submit-row input.default {
+    background: var(--primary-color);
+}
+
+.button.default:hover, input[type=submit].default:hover, .submit-row input.default:hover {
+    background: var(--accent-color);
+    color: #333;
+}
+
+/* Breadcrumbs */
+div.breadcrumbs {
+    background: var(--accent-color);
+    color: #333;
+}
+
+div.breadcrumbs a {
+    color: var(--primary-color);
+}
+
+div.breadcrumbs a:hover {
+    color: #333;
+}
+
+/* Dashboard */
+.dashboard .module table th {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.dashboard .module table td a {
+    color: var(--primary-color);
+}
+
+.dashboard .module table td a:hover {
+    color: var(--secondary-color);
+}
+
+/* Selected rows */
+.row1.selected, .row2.selected {
+    background: #e8f5e9;
+}
+
+/* Delete button */
+.delete-button {
+    background: #f44336;
+}
+
+.delete-button:hover {
+    background: #d32f2f;
+}
+
+/* Message success */
+.messagelist .success {
+    background: var(--accent-color);
+    color: #333;
+}
+
+/* Form controls */
+.selector-chosen h2 {
+    background: var(--secondary-color) !important;
+    color: var(--text-color) !important;
+}
+
+.selector-available h2 {
+    background: #ddd !important;
+    color: #666 !important;
+}
+
+/* Calendar widget */
+.calendarbox .calendarnav-previous, .calendarbox .calendarnav-next {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.calendarbox .calendarnav-previous:hover, .calendarbox .calendarnav-next:hover {
+    background: var(--primary-color);
+}
+
+/* Date & time selector */
+.datetimeshortcuts a:link, .datetimeshortcuts a:visited {
+    color: var(--primary-color);
+}
+
+/* Paginator */
+.paginator a:link, .paginator a:visited {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.paginator a:hover {
+    background: var(--primary-color);
+}
+
+/* Object tools */
+.object-tools a:link, .object-tools a:visited {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.object-tools a:hover {
+    background: var(--primary-color);
+}

@@ -1,11 +1,197 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-    <h1>Profile</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-    <p><a href="{% url 'logout' %}">Logout</a></p>
+<link rel="stylesheet" href="{% static 'css/components/profile.css' %}">
+
+<div class="profile-container">
+    <div class="row">
+        <!-- Profile Header -->
+        <div class="col-12">
+            <div class="profile-header d-flex flex-column flex-md-row align-items-center align-items-md-start">
+                <div class="profile-avatar me-md-4 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="text-center text-md-start">
+                    <h1>{{ user.username }}</h1>
+                    <p class="mb-0">{{ user.email }}</p>
+                    <p class="mb-0">Учасник з {{ user.date_joined|date:"d F Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="col-12">
+            <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab" aria-controls="personal" aria-selected="true">
+                        <i class="fas fa-user-circle me-2"></i>Особиста інформація
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">
+                        <i class="fas fa-shopping-bag me-2"></i>Історія замовлень
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if active_tab == 'settings' %}active{% endif %}" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">
+                        <i class="fas fa-cog me-2"></i>Налаштування облікового запису
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="col-12">
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Personal Information Tab -->
+                <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+                    <div class="profile-card">
+                        <h2><i class="fas fa-user-circle me-2"></i>Особиста інформація</h2>
+                        <form method="post" class="profile-form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="id_first_name">Ім'я</label>
+                                    <input type="text" id="id_first_name" name="first_name" value="{{ user.first_name }}" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_last_name">Прізвище</label>
+                                    <input type="text" id="id_last_name" name="last_name" value="{{ user.last_name }}" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_email">Електронна пошта</label>
+                                    <input type="email" id="id_email" name="email" value="{{ user.email }}" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="id_phone_number">Номер телефону</label>
+                                    <input type="tel" id="id_phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}" class="form-control">
+                                </div>
+                                <div class="col-12">
+                                    <label for="id_address">Адреса</label>
+                                    <input type="text" id="id_address" name="address" value="{{ form.address.value|default:'' }}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="profile-btn">Зберегти зміни</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order History Tab -->
+                <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                    <div class="profile-card">
+                        <h2><i class="fas fa-shopping-bag me-2"></i>Історія замовлень</h2>
+                        {% if orders %}
+                            {% for order in orders %}
+                                <div class="order-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3">
+                                            <p class="mb-1"><strong>Замовлення #{{ order.id }}</strong></p>
+                                            <p class="mb-0 text-muted">{{ order.order_date|date:"d F Y" }}</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p class="mb-1"><strong>{{ order.event.name }}</strong></p>
+                                            <p class="mb-0 text-muted">{{ order.event.date|date:"d F Y" }}</p>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <p class="mb-0"><strong>₴{{ order.total_price }}</strong></p>
+                                        </div>
+                                        <div class="col-md-3 text-md-end">
+                                            <span class="order-status status-{{ order.status }}">
+                                                {{ order.status|title }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-shopping-bag fa-3x mb-3 text-muted"></i>
+                                <p>Ви ще не зробили жодного замовлення.</p>
+                                <a href="{% url 'event_list' %}" class="profile-btn mt-2">Переглянути події</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Account Settings Tab -->
+                <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                    <div class="profile-card">
+                        <h2><i class="fas fa-cog me-2"></i>Налаштування облікового запису</h2>
+                        <div class="mb-4">
+                            <h5>Зміна пароля</h5>
+                            <p class="text-muted">Оновіть свій пароль, щоб зберегти безпеку облікового запису.</p>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }}" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <form method="post" action="{% url 'password_change' %}" class="password-change-form">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="id_old_password" class="form-label">Поточний пароль</label>
+                                    <input type="password" name="old_password" id="id_old_password" class="form-control {% if password_change_form.old_password.errors %}is-invalid{% endif %}" required>
+                                    {% if password_change_form.old_password.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in password_change_form.old_password.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_new_password1" class="form-label">Новий пароль</label>
+                                    <input type="password" name="new_password1" id="id_new_password1" class="form-control {% if password_change_form.new_password1.errors %}is-invalid{% endif %}" required>
+                                    {% if password_change_form.new_password1.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in password_change_form.new_password1.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_new_password2" class="form-label">Підтвердження нового пароля</label>
+                                    <input type="password" name="new_password2" id="id_new_password2" class="form-control {% if password_change_form.new_password2.errors %}is-invalid{% endif %}" required>
+                                    {% if password_change_form.new_password2.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in password_change_form.new_password2.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <button type="submit" class="profile-btn">Змінити пароль</button>
+                            </form>
+                        </div>
+                        <div class="mb-4">
+                            <h5>Налаштування електронної пошти</h5>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="emailUpdates" checked>
+                                <label class="form-check-label" for="emailUpdates">
+                                    Отримувати оновлення про нові події
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="emailPromotions" checked>
+                                <label class="form-check-label" for="emailPromotions">
+                                    Отримувати рекламні листи
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <h5>Видалення облікового запису</h5>
+                            <p class="text-muted">Після видалення облікового запису його неможливо відновити. Будь ласка, будьте впевнені.</p>
+                            <button class="profile-btn secondary">Видалити обліковий запис</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
