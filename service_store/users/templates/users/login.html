@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="auth-hero">
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1 class="auth-title">Вхід</h1>
+            <form method="post" class="auth-form" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <div class="invalid-tooltip">
+                        {% if field.name == 'username' %}
+                            Введіть ім'я користувача
+                        {% elif field.name == 'password' %}
+                            Введіть ваш пароль
+                        {% else %}
+                            {{ field.help_text }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary auth-button">Увійти</button>
+            </form>
+            <p class="auth-link">Немає акаунту? <a href="{% url 'register' %}">Зареєструватися</a></p>
+            <p class="auth-link">Адміністратор? <a href="/admin/">Увійти як адміністратор</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% endblock %}

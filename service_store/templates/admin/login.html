@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="auth-hero">
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1 class="auth-title">Вхід в адмін-панель</h1>
+            <form method="post" class="auth-form" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">Ім'я адміністратора</label>
+                    <input type="text" name="username" id="id_username" class="form-control" required>
+                    <div class="invalid-tooltip">
+                        Введіть ім'я адміністратора
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Пароль</label>
+                    <input type="password" name="password" id="id_password" class="form-control" required>
+                    <div class="invalid-tooltip">
+                        Введіть ваш пароль
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary auth-button">Увійти</button>
+            </form>
+            <p class="auth-link">Повернутися до <a href="{% url 'login' %}">входу користувача</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% endblock %}

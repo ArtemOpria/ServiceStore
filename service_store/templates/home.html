@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="hero-section">
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1 class="display-4">Ласкаво просимо до Floral Charm!</h1>
+            <p class="lead">Створюємо неповторну атмосферу вашого свята квітами</p>
+            <hr class="my-4">
+            <p class="lead-2">Відкрийте для себе світ квіткової магії та професійного декору</p>
+            <a class="btn btn-primary btn-lg" href="{% url 'service_list' %}" role="button">Наші Послуги</a>
+        </div>
+    </div>
+    <div class="container position-relative">
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-spa fa-3x mb-3"></i>
+                <h2>Букети</h2>
+                <p>Святкові та весільні букети, створені з любов'ю для ваших особливих моментів</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-archway fa-3x mb-3"></i>
+                <h2>Весільний Декор</h2>
+                <p>Квіткові арки, оформлення залів та повна декорація вашого весілля</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-birthday-cake fa-3x mb-3"></i>
+                <h2>Святковий Декор</h2>
+                <p>Створення атмосфери для днів народження, ювілеїв та корпоративів</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-leaf fa-3x mb-3"></i>
+                <h2>Сезонний Декор</h2>
+                <p>Тематичне оформлення під будь-яку пору року</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12 text-center">
+        <h2 class="mb-4">Чому обирають нас</h2>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="fas fa-heart fa-2x mb-3"></i>
+            <h3>Індивідуальний підхід</h3>
+            <p>Створюємо унікальні композиції за вашими побажаннями</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="fas fa-clock fa-2x mb-3"></i>
+            <h3>Швидка доставка</h3>
+            <p>Доставляємо букети та прикраси точно в термін</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="fas fa-star fa-2x mb-3"></i>
+            <h3>Професійна команда</h3>
+            <p>Досвідчені флористи та декоратори</p>
+        </div>
+    </div>
+</div>
+<div class="services-section">
+    <div class="container">
+        <div class="row">
+            <!-- Your existing card columns -->
+        </div>
+    </div>
+</div>
+{% endblock %}

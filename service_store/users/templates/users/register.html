@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="auth-hero">
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1 class="auth-title">Реєстрація</h1>
+            <form method="post" class="auth-form" novalidate>
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <div class="invalid-tooltip">
+                        {% if field.name == 'username' %}
+                            Обов'язкове поле. Максимум 150 символів. Лише літери, цифри та символи @/./+/-/_
+                        {% elif field.name == 'password1' %}
+                            Пароль має містити мінімум 8 символів та не може бути занадто простим
+                        {% elif field.name == 'password2' %}
+                            Введіть той самий пароль для підтвердження
+                        {% elif field.name == 'email' %}
+                            Введіть дійсну електронну адресу
+                        {% else %}
+                            {{ field.help_text }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary auth-button">Зареєструватися</button>
+            </form>
+            <p class="auth-link">Вже є акаунт? <a href="{% url 'login' %}">Увійти</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% endblock %}

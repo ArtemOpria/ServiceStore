@@ -1,0 +1,15 @@
+# Ignore virtual environment
+venv/
+
+# Ignore IDE files
+.idea/
+
+# Ignore all migrations except initial ones
+service_store/*/migrations/*
+!service_store/*/migrations/__init__.py
+!service_store/*/migrations/0001_initial.py
+
+# Ignore __pycache__ directories
+service_store/*/__pycache__/
+
+.env

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="page-header">
+    <div class="page-header-overlay">
+        <div class="container">
+            <h1>Каталог</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Головна</a></li>
+                    <li class="breadcrumb-item active">Каталог</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="filter-section">
+        <div class="filter-controls">
+            <button class="btn btn-filter"><i class="fas fa-filter"></i> Фільтр</button>
+            <button class="btn btn-grid active"><i class="fas fa-th"></i></button>
+            <button class="btn btn-list"><i class="fas fa-list"></i></button>
+        </div>
+        <div class="view-controls">
+            <form id="filter-form" method="get" action="{% url 'service_list' %}" class="d-flex">
+                <select class="form-select me-2" name="items_per_page" onchange="document.getElementById('filter-form').submit()">
+                    <option value="16" {% if items_per_page == 16 %}selected{% endif %}>16 на сторінці</option>
+                    <option value="32" {% if items_per_page == 32 %}selected{% endif %}>32 на сторінці</option>
+                    <option value="48" {% if items_per_page == 48 %}selected{% endif %}>48 на сторінці</option>
+                </select>
+                <select class="form-select" name="sort" onchange="document.getElementById('filter-form').submit()">
+                    <option value="default" {% if sort_by == 'default' %}selected{% endif %}>За замовчуванням</option>
+                    <option value="price" {% if sort_by == 'price' %}selected{% endif %}>За ціною</option>
+                    <option value="popularity" {% if sort_by == 'popularity' %}selected{% endif %}>За популярністю</option>
+                </select>
+                {% if page %}
+                <input type="hidden" name="page" value="{{ current_page }}">
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="products-grid">
+        {% if services %}
+            {% for service in services %}
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }}">
+                    <div class="product-overlay">
+                        <button class="btn btn-primary"><i class="fas fa-shopping-cart"></i></button>
+                        <button class="btn btn-light"><i class="fas fa-heart"></i></button>
+                    </div>
+                    {% if service.created_at|date:'Y-m-d' > '2023-01-01'|date:'Y-m-d' %}
+                    <span class="badge bg-success">Новинка</span>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <h3>{{ service.name }}</h3>
+                    <p class="price">{{ service.price }} грн</p>
+                    <p class="description">{{ service.description|truncatechars:50 }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info w-100 text-center">Немає доступних послуг</div>
+        {% endif %}
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="pagination-container">
+        <ul class="pagination">
+            {% if current_page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ current_page|add:'-1' }}&items_per_page={{ items_per_page }}&sort={{ sort_by }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+            </li>
+            {% endif %}
+            
+            {% for p in page_range %}
+            <li class="page-item {% if p == current_page %}active{% endif %}">
+                <a class="page-link" href="?page={{ p }}&items_per_page={{ items_per_page }}&sort={{ sort_by }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            
+            {% if current_page < total_pages %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ current_page|add:'1' }}&items_per_page={{ items_per_page }}&sort={{ sort_by }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
