@@ -26,7 +26,7 @@
             <button class="btn btn-list"><i class="fas fa-list"></i></button>
         </div>
         <div class="view-controls">
-            <form id="filter-form" method="get" action="{% url 'event_list' %}" class="d-flex">
+            <form id="filter-form" method="get" action="{% url 'service_list' %}" class="d-flex">
                 <select class="form-select me-2" name="items_per_page" onchange="document.getElementById('filter-form').submit()">
                     <option value="16" {% if items_per_page == 16 %}selected{% endif %}>16 на сторінці</option>
                     <option value="32" {% if items_per_page == 32 %}selected{% endif %}>32 на сторінці</option>
@@ -45,23 +45,23 @@
     </div>
 
     <div class="products-grid">
-        {% if events %}
-            {% for event in events %}
+        {% if services %}
+            {% for service in services %}
             <div class="product-card">
                 <div class="product-image">
-                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ event.name }}">
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }}">
                     <div class="product-overlay">
                         <button class="btn btn-primary"><i class="fas fa-shopping-cart"></i></button>
                         <button class="btn btn-light"><i class="fas fa-heart"></i></button>
                     </div>
-                    {% if event.created_at|date:'Y-m-d' > '2023-01-01'|date:'Y-m-d' %}
+                    {% if service.created_at|date:'Y-m-d' > '2023-01-01'|date:'Y-m-d' %}
                     <span class="badge bg-success">Новинка</span>
                     {% endif %}
                 </div>
                 <div class="product-info">
-                    <h3>{{ event.name }}</h3>
-                    <p class="price">{{ event.price }} грн</p>
-                    <p class="description">{{ event.description|truncatechars:50 }}</p>
+                    <h3>{{ service.name }}</h3>
+                    <p class="price">{{ service.price }} грн</p>
+                    <p class="description">{{ service.description|truncatechars:50 }}</p>
                 </div>
             </div>
             {% endfor %}

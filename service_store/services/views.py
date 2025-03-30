@@ -1,14 +1,15 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Event
+
+from .models import Service
 
 
-def event_list(request):
-    events = Event.objects.all()
+def service_list(request):
+    services = Service.objects.all()
     
     # Сортування
     sort_by = request.GET.get('sort', 'default')
     if sort_by == 'price':
-        events = events.order_by('price')
+        services = services.order_by('price')
     elif sort_by == 'popularity':
         # Тут можна додати логіку сортування за популярністю
         # Наприклад, якщо б у моделі було поле для відстеження переглядів
@@ -36,11 +37,11 @@ def event_list(request):
     end_index = start_index + items_per_page
     
     # Загальна кількість елементів та сторінок
-    total_events = events.count()
-    total_pages = (total_events + items_per_page - 1) // items_per_page
+    total_services = services.count()
+    total_pages = (total_services + items_per_page - 1) // items_per_page
     
     # Слайсинг подій для поточної сторінки
-    events_page = events[start_index:end_index]
+    services_page = services[start_index:end_index]
     
     # Створення списку сторінок для пагінації
     # Показуємо максимум 5 сторінок навколо поточної
@@ -55,7 +56,7 @@ def event_list(request):
             page_range = range(page - 2, page + 3)
     
     context = {
-        'events': events_page,
+        'services': services_page,
         'current_page': page,
         'total_pages': total_pages,
         'page_range': page_range,
@@ -63,9 +64,9 @@ def event_list(request):
         'sort_by': sort_by,
     }
     
-    return render(request, 'events/event_list.html', context)
+    return render(request, 'services/service_list.html', context)
 
 
-def event_detail(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    return render(request, 'events/event_detail.html', {'event': event})
+def service_detail(request, service_id):
+    service = get_object_or_404(Service, id=service_id)
+    return render(request, 'services/service_detail.html', {'service': service})

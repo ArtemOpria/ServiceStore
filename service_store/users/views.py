@@ -44,14 +44,15 @@ def profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Ваш профіль успішно оновлено!')
             return redirect('profile')
     else:
         form = ProfileForm(instance=profile)
 
-    return render(request, 'users/profile.html', {'form': form})
+    return render(request, 'users/profile.html', {'form': form, 'active_tab': 'personal'})
 
 
 @login_required
@@ -84,13 +85,13 @@ def password_change(request):
                     
                     for error in error_messages:
                         if "too similar to" in error:
-                            translated_errors.append('Ваш пароль занадто схожий на іншу особисту інформацію.')
+                            translated_errors.append('Пароль занадто схожий на іншу особисту інформацію.')
                         elif "must contain at least 8" in error:
-                            translated_errors.append('Ваш пароль повинен містити щонайменше 8 символів.')
+                            translated_errors.append('Пароль повинен містити щонайменше 8 символів.')
                         elif "too common" in error:
-                            translated_errors.append('Цей пароль занадто поширений.')
+                            translated_errors.append('Пароль занадто поширений.')
                         elif "entirely numeric" in error:
-                            translated_errors.append('Ваш пароль не може складатися лише з цифр.')
+                            translated_errors.append('Пароль не може складатися лише з цифр.')
                         else:
                             continue
 
