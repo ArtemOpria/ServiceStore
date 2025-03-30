@@ -9,14 +9,14 @@
             <form method="post" class="auth-form" novalidate>
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="id_username">Ім'я адміністратора:</label>
+                    <label for="id_username">Ім'я адміністратора</label>
                     <input type="text" name="username" id="id_username" class="form-control" required>
                     <div class="invalid-tooltip">
                         Введіть ім'я адміністратора
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="id_password">Пароль:</label>
+                    <label for="id_password">Пароль</label>
                     <input type="password" name="password" id="id_password" class="form-control" required>
                     <div class="invalid-tooltip">
                         Введіть ваш пароль
