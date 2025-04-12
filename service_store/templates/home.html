@@ -4,6 +4,7 @@
 {% block hero %}
 <div class="hero-section">
     <div class="hero-overlay">
+        <div class="container" style="display: flex; justify-content: flex-end;">
         <div class="hero-content">
             <h1 class="display-4">Ласкаво просимо до Floral Charm!</h1>
             <p class="lead">Створюємо неповторну атмосферу вашого свята квітами</p>
@@ -12,23 +13,26 @@
             <a class="btn btn-primary btn-lg" href="{% url 'service_list' %}" role="button">Наші Послуги</a>
         </div>
     </div>
+    </div>
     <div class="container position-relative">
     </div>
 </div>
 {% endblock %}
 
 {% block content %}
-<div class="row mt-5">
-    <div class="col-md-3">
+<div class="row mt-5 row-cols-xl-4 row-cols-md-2 row-cols-sm-1 row-cols-xs-1 g-4">
+    <div>
         <div class="card h-100">
             <div class="card-body text-center">
-                <i class="fas fa-spa fa-3x mb-3"></i>
-                <h2>Букети</h2>
+                <div class="text-icon">
+                    <i class="fas fa-spa fa-3x mb-3"></i>
+                    <h2>Букети</h2>
+                </div>
                 <p>Святкові та весільні букети, створені з любов'ю для ваших особливих моментів</p>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div>
         <div class="card h-100">
             <div class="card-body text-center">
                 <i class="fas fa-archway fa-3x mb-3"></i>
@@ -37,7 +41,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div>
         <div class="card h-100">
             <div class="card-body text-center">
                 <i class="fas fa-birthday-cake fa-3x mb-3"></i>
@@ -46,7 +50,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div>
         <div class="card h-100">
             <div class="card-body text-center">
                 <i class="fas fa-leaf fa-3x mb-3"></i>

@@ -35,7 +35,7 @@
     background: transparent;
     display: flex;
     justify-content: center;
-    font-size: 1.7rem;
+    font-size: 2rem;
     margin-top: 1rem;
 }
 
@@ -68,7 +68,6 @@
 
 .breadcrumb-item+.breadcrumb-item::before {
     color: white;
-    font-size: 1.7rem;
 }
 
 .filter-section {
@@ -76,10 +75,37 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    padding: 1rem;
+    padding: 1rem 1.5rem;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+}
+
+.filter-controls-right {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-select-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-select-group label {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.filter-select-group .form-select {
+    width: auto;
+    min-width: 180px;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+    font-size: 0.9rem;
 }
 
 .btn-filter, .btn-grid, .btn-list {
@@ -98,6 +124,88 @@
     border-color: #ddd;
 }
 
+/* Стилі для лівої панелі з фільтрами */
+.filter-sidebar {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%; /* Ensure it takes full width by default */
+    transition: width 0.3s ease, max-width 0.3s ease; /* Add smooth transition */
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-group h4 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #333;
+    font-weight: 600;
+    position: relative;
+}
+
+.filter-options {
+    margin-left: 0.5rem;
+}
+
+.form-check {
+    margin-bottom: 0.5rem;
+}
+
+.form-check-label {
+    color: #666;
+    cursor: pointer;
+}
+
+.form-check-input {
+    cursor: pointer;
+}
+
+/* Стилі для спливаючого вікна з кнопкою "Показати" */
+.filter-popup {
+    position: fixed;
+    bottom: -100px;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    transition: bottom 0.3s ease;
+    z-index: 1000;
+}
+
+.filter-popup.active {
+    bottom: 0;
+}
+
+.filter-popup-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#selected-filters-count {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+#show-results-btn {
+    padding: 0.5rem 2rem;
+    background-color: #337c37;
+    border-color: #337c37;
+}
+
+#show-results-btn:hover {
+    background-color: #286c2b;
+    border-color: #286c2b;
+}
+
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -105,16 +213,44 @@
     margin-bottom: 3rem;
 }
 
+.products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.products-list .product-card {
+    display: flex;
+    flex-direction: row;
+    max-height: 250px;
+}
+
+.products-list .product-image {
+    width: 250px;
+    height: 250px;
+    padding-top: 0;
+    flex-shrink: 0;
+}
+
+.products-list .product-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 .product-card {
     background: white;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
 }
 
 .product-card:hover {
-    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
 }
 
 .product-image {
@@ -163,7 +299,31 @@
     color: #333;
 }
 
-.price {
+.product-info h3 a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.product-info h3 a:hover {
+    color: #5a3c1e;
+}
+
+.add-to-cart-icon {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    transition: all 0.3s;
+    font-weight: 500;
+    background-color: #337c37;
+    border-color: #337c37;
+    color: white;
+}
+
+.add-to-cart-icon:hover {
+    background-color: #286c2b;
+    border-color: #286c2b;
+}.price {
     color: #337c37;
     font-weight: 600;
     font-size: 1.1rem;
@@ -182,10 +342,90 @@
     z-index: 1;
 }
 
+.category-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1;
+    background-color: #5a3c1e !important; /* Changed from blue to a warm brown */
+}
+
 .pagination-container {
     display: flex;
     justify-content: center;
     margin: 3rem 0;
+}
+
+.pagination .page-link {
+    border-color: #ddd;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #337c37;
+    border-color: #337c37;
+}
+
+/* Стилі для фіксованої бокової панелі */
+.filter-sidebar.sticky {
+    position: sticky;
+    top: 2rem;
+    width: 100%;
+    z-index: 100;
+}
+
+/* Add media queries for better responsiveness */
+@media (max-width: 992px) {
+    .filter-sidebar.sticky {
+        width: 100%; /* Full width on smaller screens even when sticky */
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-sidebar {
+        margin-bottom: 1rem;
+    }
+    
+    .col-md-3 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Стилі для контейнера опцій фільтрації в filter-section */
+.filter-options-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.filter-section .filter-group {
+    margin-bottom: 0;
+}
+
+.filter-section .filter-group h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.filter-section .filter-options {
+    display: flex;
+    gap: 1rem;
+}
+
+.filter-section .form-check {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .filter-options-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .filter-section .filter-options {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }
 
 .page-link {
@@ -197,6 +437,18 @@
 .page-item.active .page-link {
     background-color: #337c37;
     border-color: #337c37;
+}
+
+@media (max-width: 992px) and (min-width: 769px) {
+    .filter-controls-right {
+        flex-wrap: wrap;
+        row-gap: 0.75rem;
+        justify-content: flex-end;
+    }
+    
+    .filter-select-group {
+        min-width: 160px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -211,7 +463,44 @@
         gap: 1rem;
     }
     
+    .filter-controls-right {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .filter-select-group {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .filter-select-group .form-select {
+        width: 100%;
+    }
+    
     .form-select {
         margin-left: 0;
     }
+}
+
+
+/* Стилі для бокової панелі фільтрації */
+.filter-action {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#selected-filters-count {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+#show-results-btn {
+    padding: 5px 15px;
+    font-size: 0.9rem;
 }

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Додаємо стилі для сторінки кошика, оскільки вони підходять і для оформлення замовлення -->
+<link href="{% static 'css/components/cart.css' %}" rel="stylesheet">
+
+<!-- Заголовок сторінки з хлібними крихтами -->
+<div class="page-header" style="background: url('{% static "images/shop-header.jpg" %}') no-repeat center center; background-size: cover;">
+    <div class="page-header-overlay">
+        <div class="container">
+            <h1>Оформлення замовлення</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Головна</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cart' %}">Кошик</a></li>
+                    <li class="breadcrumb-item active">Оформлення замовлення</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Форма оформлення замовлення -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Інформація для доставки</h3>
+                    <form method="post" action="{% url 'checkout' %}">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">Ім'я</label>
+                                <input type="text" class="form-control" id="firstName" name="first_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Прізвище</label>
+                                <input type="text" class="form-control" id="lastName" name="last_name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Адреса</label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">Місто</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="zip" class="form-label">Поштовий індекс</label>
+                                <input type="text" class="form-control" id="zip" name="zip" required>
+                            </div>
+                        </div>
+                        
+                        <h3 class="card-title mb-4 mt-5">Спосіб оплати</h3>
+                        <div class="mb-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="creditCard" value="credit_card" checked>
+                                <label class="form-check-label" for="creditCard">
+                                    Кредитна картка
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
+                                <label class="form-check-label" for="paypal">
+                                    PayPal
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="cashOnDelivery" value="cash_on_delivery">
+                                <label class="form-check-label" for="cashOnDelivery">
+                                    Оплата при отриманні
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="creditCardDetails" class="mb-4">
+                            <div class="mb-3">
+                                <label for="cardName" class="form-label">Ім'я на картці</label>
+                                <input type="text" class="form-control" id="cardName" name="card_name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="cardNumber" class="form-label">Номер картки</label>
+                                <input type="text" class="form-control" id="cardNumber" name="card_number">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="expiration" class="form-label">Термін дії</label>
+                                    <input type="text" class="form-control" id="expiration" name="expiration" placeholder="MM/YY">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cvv" class="form-label">CVV</label>
+                                    <input type="text" class="form-control" id="cvv" name="cvv">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="saveInfo" name="save_info">
+                            <label class="form-check-label" for="saveInfo">Зберегти цю інформацію для наступних замовлень</label>
+                        </div>
+                        
+                        <button type="submit" class="checkout-btn">Підтвердити замовлення</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Блок з підсумками замовлення -->
+        <div class="col-lg-4">
+            <div class="cart-totals">
+                <h2>Ваше замовлення</h2>
+                
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                    <div class="cart-totals-row">
+                        <span class="cart-totals-label">{{ item.service.name }} x {{ item.quantity }}</span>
+                        <span class="cart-totals-value">₴{{ item.total_price }}</span>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="cart-totals-row">
+                        <span class="cart-totals-label">Сума</span>
+                        <span class="cart-totals-value">₴{{ subtotal }}</span>
+                    </div>
+                    <div class="cart-totals-row">
+                        <span class="cart-totals-label">Загалом</span>
+                        <span class="cart-totals-value">₴{{ total }}</span>
+                    </div>
+                {% else %}
+                    <div class="cart-totals-row">
+                        <span class="cart-totals-label">Ваш кошик порожній</span>
+                        <span class="cart-totals-value">₴0</span>
+                    </div>
+                {% endif %}
+                
+                <a href="{% url 'cart' %}" class="continue-shopping mt-3">
+                    <i class="fas fa-arrow-left me-2"></i> Повернутися до кошика
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript для форми оплати -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+        const creditCardDetails = document.getElementById('creditCardDetails');
+        
+        paymentMethods.forEach(method => {
+            method.addEventListener('change', function() {
+                if (this.value === 'credit_card') {
+                    creditCardDetails.style.display = 'block';
+                } else {
+                    creditCardDetails.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

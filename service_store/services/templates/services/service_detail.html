@@ -1,10 +1,618 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block hero %}
+<div class="page-header">
+    <div class="page-header-overlay">
+        <div class="container">
+            <h1>{{ service.name }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Головна</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'service_list' %}">Каталог</a></li>
+                    <li class="breadcrumb-item active">{{ service.name }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- Галерея зображень -->
+        <div class="col-md-6 border-5">
+            <div class="product-gallery d-flex shadow-sm rounded p-3 bg-white ">
+                <!-- Вертикальні мініатюри зліва -->
+                <div class="gallery-thumbnails me-3">
+                    <img src="{% static 'images/placeholder.jpg' %}" class="gallery-thumbnail active rounded" data-src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }} - мініатюра 1">
+                    <img src="{% static 'images/placeholder.jpg' %}" class="gallery-thumbnail rounded" data-src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }} - мініатюра 2">
+                    <img src="{% static 'images/placeholder.jpg' %}" class="gallery-thumbnail rounded" data-src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }} - мініатюра 3">
+                    <img src="{% static 'images/placeholder.jpg' %}" class="gallery-thumbnail rounded" data-src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }} - мініатюра 4">
+                </div>
+                <!-- Основне зображення -->
+                <div class="gallery-main">
+                    <img src="{% if service.image %}{{ service.image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}" class="gallery-main-image rounded" id="main-product-image" alt="{{ service.name }}">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Інформація про продукт -->
+        <div class="col-md-6">
+            <div class="card shadow-md border-0 h-100">
+                <div class="card-body">
+                    <h1 class="product-title fw-bold">{{ service.name }}</h1>
+                    <div class="product-price fs-3 fw-bold mb-3">{{ service.price }} грн</div>
+                    
+                    <!-- Рейтинг -->
+                    <div class="product-rating mb-3">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span class="rating-count">(4.0 / 5)</span>
+                    </div>
+                    
+                    <!-- Короткий опис -->
+                    <div class="product-description mb-4">
+                        {{ service.description|truncatewords:30 }}
+                    </div>
+            
+            <!-- Кнопки дій -->
+            <div class="product-actions d-flex justify-content-center gap-3 mb-4">
+                <div class="quantity-control">
+                    <button class="quantity-btn btn" id="decrease-quantity">-</button>
+                    <input type="text" class="quantity-input" id="quantity" value="1" min="1" readonly>
+                    <button class="quantity-btn btn" id="increase-quantity">+</button>
+                </div>
+                <button class="add-to-cart-btn btn btn-success" id="add-to-cart-btn" data-service-id="{{ service.id }}">
+                    <i class="fas fa-shopping-cart me-2"></i>Додати в кошик
+                </button>
+            </div>
+            
+            <!-- Мета-інформація -->
+            <div class="product-meta pt-3 border-top">
+                <!-- Категорія -->
+                <div class="product-category mb-3">
+                    <span class="fw-bold">Категорія:</span> 
+                    {% if service.category %}
+                        <a href="{% url 'service_list' %}?category={{ service.category.id }}" class="text-decoration-none">{{ service.category.name }}</a>
+                    {% else %}
+                        Не вказано
+                    {% endif %}
+                </div>
+                
+                <!-- Соціальні мережі -->
+                <div class="product-share d-flex align-items-center gap-2">
+                    <span class="fw-bold">Поділитися:</span>
+                    <div class="social-icons d-flex gap-2">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-pinterest-p"></i></a>
+                    </div>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- JavaScript for Add to Cart functionality -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the add to cart button
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const quantityInput = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decrease-quantity');
+        const increaseBtn = document.getElementById('increase-quantity');
+        
+        // Add event listeners for quantity buttons
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                }
+            });
+        }
+        
+        if (increaseBtn) {
+            increaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                quantityInput.value = quantity + 1;
+            });
+        }
+        
+        // Add event listener for add to cart button
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function() {
+                const serviceId = this.getAttribute('data-service-id');
+                const quantity = parseInt(quantityInput.value);
+                
+                // Call the addToCart function from cart.js
+                addToCart(serviceId, quantity);
+            });
+        }
+    });
+</script>
+</div>
+
+    <!-- Детальна інформація з табами -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-md border-1">
+                <div class="card-body p-0">
+                    <!-- Таби -->
+                    <ul class="nav nav-tabs product-tabs" id="productTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Опис</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="additional-tab" data-bs-toggle="tab" data-bs-target="#additional" type="button" role="tab" aria-controls="additional" aria-selected="false">Додаткова інформація</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Відгуки (5)</button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Вміст табів -->
+                    <div class="tab-content p-4" id="productTabsContent">
+                        <!-- Таб з описом -->
+                        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                            <div class="product-full-description">
+                                <h3 class="mb-4">Детальний опис послуги</h3>
+                                <p>{{ service.description }}</p>
+                                <p>Наша послуга "{{ service.name }}" надається професійними майстрами з багаторічним досвідом роботи. Ми використовуємо тільки якісні матеріали та сучасне обладнання, щоб забезпечити найкращий результат.</p>
+                                <h4 class="mb-3">Наші переваги:</h4>
+                                <div class="advantages-container mb-4 p-3 rounded" style="background-color: #f9f5f0;">
+                                    <div class="row g-3">
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="advantage-item text-center p-3">
+                                                <div class="advantage-icon mb-2">
+                                                    <i class="fas fa-trophy" style="font-size: 2rem; color: #5a4a42;"></i>
+                                                </div>
+                                                <h5>Висока якість</h5>
+                                                <p class="small mb-0">Виготовлено з найкращих матеріалів</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="advantage-item text-center p-3">
+                                                <div class="advantage-icon mb-2">
+                                                    <i class="fas fa-shield-alt" style="font-size: 2rem; color: #5a4a42;"></i>
+                                                </div>
+                                                <h5>Гарантія</h5>
+                                                <p class="small mb-0">Захист на 2 роки</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="advantage-item text-center p-3">
+                                                <div class="advantage-icon mb-2">
+                                                    <i class="fas fa-truck" style="font-size: 2rem; color: #5a4a42;"></i>
+                                                </div>
+                                                <h5>Безкоштовна доставка</h5>
+                                                <p class="small mb-0">При замовленні від 150 грн</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="advantage-item text-center p-3">
+                                                <div class="advantage-icon mb-2">
+                                                    <i class="fas fa-headset" style="font-size: 2rem; color: #5a4a42;"></i>
+                                                </div>
+                                                <h5>24/7 Підтримка</h5>
+                                                <p class="small mb-0">Цілодобова допомога</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Таб з додатковою інформацією -->
+                        <div class="tab-pane fade" id="additional" role="tabpanel" aria-labelledby="additional-tab">
+                            <h3 class="mb-4">Додаткова інформація</h3>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row" class="bg-light">Тривалість</th>
+                                            <td>Від 1 до 3 годин</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="bg-light">Гарантія</th>
+                                            <td>6 місяців</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="bg-light">Матеріали</th>
+                                            <td>Включені у вартість</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" class="bg-light">Виїзд майстра</th>
+                                            <td>Безкоштовно в межах міста</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Таб з відгуками -->
+                        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                            <div class="reviews-section">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h3 class="mb-0">Відгуки клієнтів</h3>
+                                    <button class="btn btn-outline-success">Залишити відгук</button>
+                                </div>
+                                
+                                <!-- Список відгуків -->
+                                <div class="reviews-list">
+                                    <!-- Відгук 1 -->
+                                    <div class="review-item mb-4 p-3 border-bottom">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <img src="{% static 'images/placeholder.jpg' %}" alt="User" class="rounded-circle me-2" width="50" height="50">
+                                                <div>
+                                                    <h5 class="mb-0">Олена Петренко</h5>
+                                                    <div class="text-muted small">10 травня 2023</div>
+                                                </div>
+                                            </div>
+                                            <div class="product-rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <p>Дуже задоволена якістю послуги. Майстер прийшов вчасно, все зробив швидко та якісно. Рекомендую!</p>
+                                    </div>
+                                    
+                                    <!-- Відгук 2 -->
+                                    <div class="review-item mb-4 p-3 border-bottom">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <img src="{% static 'images/placeholder.jpg' %}" alt="User" class="rounded-circle me-2" width="50" height="50">
+                                                <div>
+                                                    <h5 class="mb-0">Іван Коваленко</h5>
+                                                    <div class="text-muted small">2 квітня 2023</div>
+                                                </div>
+                                            </div>
+                                            <div class="product-rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <p>Хороша послуга за свої гроші. Єдиний мінус - довелося трохи почекати, але результат того вартий.</p>
+                                    </div>
+                                    
+                                    <!-- Відгук 3 -->
+                                    <div class="review-item mb-4 p-3 border-bottom">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <img src="{% static 'images/placeholder.jpg' %}" alt="User" class="rounded-circle me-2" width="50" height="50">
+                                                <div>
+                                                    <h5 class="mb-0">Марія Сидоренко</h5>
+                                                    <div class="text-muted small">15 березня 2023</div>
+                                                </div>
+                                            </div>
+                                            <div class="product-rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <p>Відмінний сервіс! Все зроблено на найвищому рівні. Обов'язково звернуся ще раз.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- JavaScript for Add to Cart functionality -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the add to cart button
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const quantityInput = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decrease-quantity');
+        const increaseBtn = document.getElementById('increase-quantity');
+        
+        // Add event listeners for quantity buttons
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                }
+            });
+        }
+        
+        if (increaseBtn) {
+            increaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                quantityInput.value = quantity + 1;
+            });
+        }
+        
+        // Add event listener for add to cart button
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function() {
+                const serviceId = this.getAttribute('data-service-id');
+                const quantity = parseInt(quantityInput.value);
+                
+                // Call the addToCart function from cart.js
+                addToCart(serviceId, quantity);
+            });
+        }
+    });
+</script>
+
+    <!-- Галерея додаткових фотографій -->
+    <div class="row mt-5">
+        <div class="col-12 mb-4">
+            <h2 class="section-title">Галерея робіт</h2>
+        </div>
+        <div class="col-12">
+            <div class="row g-3 gallery-additional">
+                <div class="col-md-3 col-6">
+                    <div class="gallery-item">
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="Галерея 1" class="img-fluid rounded">
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="gallery-item">
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="Галерея 2" class="img-fluid rounded">
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="gallery-item">
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="Галерея 3" class="img-fluid rounded">
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="gallery-item">
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="Галерея 4" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- JavaScript for Add to Cart functionality -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the add to cart button
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const quantityInput = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decrease-quantity');
+        const increaseBtn = document.getElementById('increase-quantity');
+        
+        // Add event listeners for quantity buttons
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                }
+            });
+        }
+        
+        if (increaseBtn) {
+            increaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                quantityInput.value = quantity + 1;
+            });
+        }
+        
+        // Add event listener for add to cart button
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function() {
+                const serviceId = this.getAttribute('data-service-id');
+                const quantity = parseInt(quantityInput.value);
+                
+                // Call the addToCart function from cart.js
+                addToCart(serviceId, quantity);
+            });
+        }
+    });
+</script>
+    
+    <!-- Пов'язані послуги -->
+    <div class="row mt-5">
+        <div class="col-12 d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0">Пов'язані послуги</h2>
+            {% if service.category %}
+                <a href="{% url 'service_list' %}?category={{ service.category.id }}" class="btn btn-outline-success">Показати більше</a>
+            {% else %}
+                <a href="{% url 'service_list' %}" class="btn btn-outline-success">Показати більше</a>
+            {% endif %}
+        </div>
+        <div class="col-12">
+            <div class="row g-4 related-services">
+                <!-- Пов'язана послуга 1 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="Послуга 1">
+                        <div class="card-body">
+                            <h5 class="card-title">Послуга 1</h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <p class="card-text">Короткий опис послуги...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">500 грн</span>
+                                <a href="#" class="btn btn-sm btn-outline-success">Детальніше</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Пов'язана послуга 2 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="Послуга 2">
+                        <div class="card-body">
+                            <h5 class="card-title">Послуга 2</h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="card-text">Короткий опис послуги...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">750 грн</span>
+                                <a href="#" class="btn btn-sm btn-outline-success">Детальніше</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Пов'язана послуга 3 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="Послуга 3">
+                        <div class="card-body">
+                            <h5 class="card-title">Послуга 3</h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <p class="card-text">Короткий опис послуги...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">600 грн</span>
+                                <a href="#" class="btn btn-sm btn-outline-success">Детальніше</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Пов'язана послуга 4 -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="Послуга 4">
+                        <div class="card-body">
+                            <h5 class="card-title">Послуга 4</h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <p class="card-text">Короткий опис послуги...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">850 грн</span>
+                                <a href="#" class="btn btn-sm btn-outline-success">Детальніше</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- JavaScript for Add to Cart functionality -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the add to cart button
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const quantityInput = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decrease-quantity');
+        const increaseBtn = document.getElementById('increase-quantity');
+        
+        // Add event listeners for quantity buttons
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                }
+            });
+        }
+        
+        if (increaseBtn) {
+            increaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                quantityInput.value = quantity + 1;
+            });
+        }
+        
+        // Add event listener for add to cart button
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function() {
+                const serviceId = this.getAttribute('data-service-id');
+                const quantity = parseInt(quantityInput.value);
+                
+                // Call the addToCart function from cart.js
+                addToCart(serviceId, quantity);
+            });
+        }
+    });
+</script>
+</div>
+
+<script>
+    // Функціонал для галереї зображень
+    document.addEventListener('DOMContentLoaded', function() {
+        const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+        const mainImage = document.getElementById('main-product-image');
+        
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                // Оновлення основного зображення
+                mainImage.src = this.getAttribute('data-src');
+                
+                // Оновлення активного стану мініатюр
+                thumbnails.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Функціонал для кількості товару
+        const decreaseBtn = document.getElementById('decrease-quantity');
+        const increaseBtn = document.getElementById('increase-quantity');
+        const quantityInput = document.getElementById('quantity');
+        
+        // Забороняємо введення тексту в поле кількості
+        quantityInput.addEventListener('keydown', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        decreaseBtn.addEventListener('click', function() {
+            const currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+        
+        increaseBtn.addEventListener('click', function() {
+            const currentValue = parseInt(quantityInput.value);
+            quantityInput.value = currentValue + 1;
+        });
+        
+        // Ініціалізація табів Bootstrap
+        const tabEl = document.querySelector('button[data-bs-toggle="tab"]');
+        tabEl && new bootstrap.Tab(tabEl);
+    });
+</script>
+{% endblock %}

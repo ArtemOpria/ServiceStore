@@ -1,16 +1,16 @@
 from django.contrib import admin
-from .models import Service
+from .models import Service, Category
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'date', 'price')
-    list_filter = ('date', 'price')
+    list_display = ('name', 'category', 'price')
+    list_filter = ('category', 'price')
     search_fields = ('name', 'description')
-    date_hierarchy = 'date'
-    ordering = ('-date',)
+    ordering = ('-price',)
     fieldsets = (
         ('Service Information', {
-            'fields': ('name', 'description', 'price')
+            'fields': ('name', 'description', 'price', 'category', 'image', 'is_active')
         }),
     )
 
 admin.site.register(Service, ServiceAdmin)
+admin.site.register(Category)

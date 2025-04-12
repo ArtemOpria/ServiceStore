@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="page-header">
+    <div class="page-header-overlay">
+        <div class="container">
+            <h1>Кошик</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Головна</a></li>
+                    <li class="breadcrumb-item active">Кошик</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        {% if cart_items %}
+        <!-- Таблиця з товарами в кошику -->
+        <div class="col-lg-8">
+            <table class="table cart-table">
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Ціна</th>
+                        <th>Кількість</th>
+                        <th>Сума</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr data-item-id="{{ item.service.id }}">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ item.service.image.url }}" alt="{{ item.service.name }}" class="cart-product-img me-3">
+                                <a href="{% url 'service_detail' item.service.id %}" class="cart-product-name">{{ item.service.name }}</a>
+                            </div>
+                        </td>
+                        <td data-label="Ціна:" class="cart-product-price">₴{{ item.service.price }}</td>
+                        <td data-label="Кількість:">
+                            <div class="cart-quantity-control">
+                                <button class="cart-quantity-btn" onclick="updateQuantity({{ item.service.id }}, 'decrease')">-</button>
+                                <input type="number" class="cart-quantity-input" value="{{ item.quantity }}" min="1" max="10" readonly>
+                                <button class="cart-quantity-btn" onclick="updateQuantity({{ item.service.id }}, 'increase')">+</button>
+                            </div>
+                        </td>
+                        <td data-label="Сума:" class="cart-product-total">₴{{ item.total_price }}</td>
+                        <td>
+                            <button class="cart-remove-btn" onclick="removeFromCart({{ item.service.id }})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'service_list' %}" class="continue-shopping">
+                <i class="fas fa-arrow-left fa-sm me-2"></i> Продовжити покупки
+            </a>
+        </div>
+        {% else %}
+        <!-- Порожній кошик (центрований) -->
+        <div class="col-12 d-flex justify-content-center align-items-center">
+            <div class="empty-cart text-center py-5 my-4">
+                <i class="fas fa-shopping-cart fa-4x mb-4"></i>
+                <h3>Ваш кошик порожній</h3>
+                <p>Додайте товари до кошика, щоб продовжити</p>
+                <a href="{% url 'service_list' %}" class="btn btn-success mt-3">
+                    <i class="fas fa-arrow-left me-2 arrow-catalog"></i> Перейти до каталогу
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Блок з підсумками замовлення -->
+        <div class="col-lg-4">
+            <div class="cart-totals">
+                <h2>Підсумок замовлення</h2>
+                <div class="cart-totals-row">
+                    <span class="cart-totals-label">Сума</span>
+                    <span class="cart-totals-value">₴{{ subtotal }}</span>
+                </div>
+                <div class="cart-totals-row">
+                    <span class="cart-totals-label">Загалом</span>
+                    <span class="cart-totals-value">₴{{ total }}</span>
+                </div>
+                <a href="{% url 'checkout' %}" class="checkout-btn">
+                    Оформити замовлення
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript для функціоналу кошика -->
+<script src="{% static 'js/cart.js' %}"></script>
+<script>
+    function updateQuantity(itemId, action) {
+        // Оновлення кількості товару через функцію з cart.js
+        const newQuantity = updateItemQuantity(itemId, action);
+        
+        // Оновлення відображення кількості на сторінці
+        const quantityInput = document.querySelector(`tr[data-item-id="${itemId}"] .cart-quantity-input`);
+        if (quantityInput) {
+            quantityInput.value = newQuantity;
+        }
+        
+        // Оновлення загальної суми для товару
+        const priceElement = document.querySelector(`tr[data-item-id="${itemId}"] .cart-product-price`);
+        const totalElement = document.querySelector(`tr[data-item-id="${itemId}"] .cart-product-total`);
+        if (priceElement && totalElement) {
+            const price = parseFloat(priceElement.textContent.replace('₴', ''));
+            totalElement.textContent = `₴${(price * newQuantity).toFixed(2)}`;
+        }
+        
+        // Оновлення загальної суми замовлення
+        updateOrderTotals();
+    }
+    
+    function removeFromCart(itemId) {
+        // Видалення товару з кошика через функцію з cart.js
+        removeItem(itemId);
+        
+        // Видалення рядка з таблиці
+        const itemRow = document.querySelector(`tr[data-item-id="${itemId}"]`);
+        if (itemRow) {
+            itemRow.remove();
+        }
+        
+        // Оновлення загальної суми замовлення
+        updateOrderTotals();
+        
+        // Перевірка, чи кошик порожній
+        const cartTable = document.querySelector('.cart-table tbody');
+        if (cartTable && cartTable.children.length === 0) {
+            // Показати повідомлення про порожній кошик
+            const rowContainer = document.querySelector('.row');
+            if (rowContainer) {
+                rowContainer.innerHTML = `
+                    <div class="col-12 d-flex justify-content-center align-items-center">
+                        <div class="empty-cart text-center py-5 my-4">
+                            <i class="fas fa-shopping-cart fa-4x mb-4"></i>
+                            <h3>Ваш кошик порожній</h3>
+                            <p>Додайте товари до кошика, щоб продовжити</p>
+                            <a href="{% url 'service_list' %}" class="btn btn-success mt-3">
+                                <i class="fas fa-arrow-left me-2"></i> Перейти до каталогу
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    // Функція для оновлення загальної суми замовлення
+    function updateOrderTotals() {
+        let subtotal = 0;
+        
+        // Підрахунок загальної суми всіх товарів
+        document.querySelectorAll('.cart-product-total').forEach(element => {
+            subtotal += parseFloat(element.textContent.replace('₴', ''));
+        });
+        
+        // Оновлення відображення суми
+        const subtotalElement = document.querySelector('.cart-totals-value:first-of-type');
+        const totalElement = document.querySelector('.cart-totals-value:last-of-type');
+        
+        if (subtotalElement && totalElement) {
+            subtotalElement.textContent = `₴${subtotal.toFixed(2)}`;
+            totalElement.textContent = `₴${subtotal.toFixed(2)}`; // Тут можна додати логіку для знижок, доставки тощо
+        }
+    }
+</script>
+{% endblock content %}
