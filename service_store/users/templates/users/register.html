@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/form-validation.js' %}"></script>
+{% endblock %}
+
 {% block hero %}
 <div class="auth-hero">
     <div class="auth-container">
@@ -12,15 +20,24 @@
                 <div class="form-group">
                     {{ field.label_tag }}
                     {{ field }}
+                    {% if field.errors %}
+                        <div class="error-message">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <div class="invalid-tooltip">
-                        {% if field.name == 'username' %}
-                            Обов'язкове поле. Максимум 150 символів. Лише літери, цифри та символи @/./+/-/_
+                        {% if field.name == 'email' %}
+                            Введіть дійсну електронну адресу
+                        {% elif field.name == 'first_name' %}
+                            Введіть ваше ім'я
+                        {% elif field.name == 'last_name' %}
+                            Введіть ваше прізвище
                         {% elif field.name == 'password1' %}
                             Пароль має містити мінімум 8 символів та не може бути занадто простим
                         {% elif field.name == 'password2' %}
                             Введіть той самий пароль для підтвердження
-                        {% elif field.name == 'email' %}
-                            Введіть дійсну електронну адресу
                         {% else %}
                             {{ field.help_text }}
                         {% endif %}

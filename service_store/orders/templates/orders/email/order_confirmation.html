@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Підтвердження замовлення</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .order-details {
+            margin: 20px 0;
+        }
+        .order-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .order-total {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: right;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Підтвердження замовлення</h1>
+    </div>
+    
+    <p>Шановний(а) {{ first_name }} {{ last_name }},</p>
+    
+    <p>Дякуємо за ваше замовлення! Ми отримали ваше замовлення та обробляємо його.</p>
+    
+    <div class="order-details">
+        <h2>Деталі замовлення:</h2>
+        
+        {% for item in cart_items %}
+        <div class="order-item">
+            <p><strong>{{ item.service.name }}</strong> x {{ item.quantity }}</p>
+            <p>Ціна: ₴{{ item.service.price }}</p>
+            <p>Сума: ₴{{ item.total_price }}</p>
+        </div>
+        {% endfor %}
+        
+        <div class="order-total">
+            <p>Загальна сума: ₴{{ total }}</p>
+        </div>
+    </div>
+    
+    <p>Ми повідомимо вас, коли ваше замовлення буде готове.</p>
+    
+    <p>Якщо у вас виникли питання щодо вашого замовлення, будь ласка, зв'яжіться з нашою службою підтримки.</p>
+    
+    <div class="footer">
+        <p>З повагою,<br>Команда Service Store</p>
+    </div>
+</body>
+</html>

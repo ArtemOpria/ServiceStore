@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/form-validation.js' %}"></script>
+{% endblock %}
+
 {% block hero %}
 <div class="auth-hero">
     <div class="auth-container">
@@ -12,9 +20,16 @@
                 <div class="form-group">
                     {{ field.label_tag }}
                     {{ field }}
+                    {% if field.errors %}
+                        <div class="error-message">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <div class="invalid-tooltip">
                         {% if field.name == 'username' %}
-                            Введіть ім'я користувача
+                            Введіть вашу електронну пошту
                         {% elif field.name == 'password' %}
                             Введіть ваш пароль
                         {% else %}
