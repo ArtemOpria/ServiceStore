@@ -30,45 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-LANGUAGE_CODE = 'uk'
-USE_I18N = True
-USE_L10N = True
-
-
-# Custom user model
-AUTH_USER_MODEL = 'users.CustomUser'
-
-from django.utils.translation import gettext_lazy as _
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {
-            'min_length': 8,
-            'message': _('Пароль занадто короткий. Він повинен містити принаймні 8 символів.')
-        }
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-        'OPTIONS': {
-            'message': _('Цей пароль занадто поширений.')
-        }
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-        'OPTIONS': {
-            'message': _('Пароль не може складатися тільки з цифр.')
-        }
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-        'OPTIONS': {
-            'message': _('Пароль занадто схожий на ваше ім’я чи прізвище.')
-        }
-    }
-]
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -135,30 +96,39 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'users.validators.CustomMinimumLengthValidator',
+        'OPTIONS': {'min_length': 8}
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'users.validators.CustomCommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+        'NAME': 'users.validators.CustomNumericPasswordValidator',
+    }
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
+LANGUAGE_CODE = 'uk'
 TIME_ZONE = 'UTC'
 
+USE_L10N = True
 USE_I18N = True
-
 USE_TZ = True
+
+
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
+
+LANGUAGES = [
+    ('uk', _('Українська')),
+    ('en', _('English')),
+]
+
+# Custom user model
+AUTH_USER_MODEL = 'users.CustomUser'
 
 
 # Static files (CSS, JavaScript, Images)

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load url_helpers %}
 
 {% block hero %}
 <div class="page-header">
@@ -30,13 +31,19 @@
                             {% for category in categories %}
                             <div class="form-check">
                                 <input class="form-check-input filter-checkbox" type="checkbox" name="category"
-                                    value="{{ category.id }}" id="category-{{ category.id }}" {% if category.id|stringformat:"i" == request.GET.category %}checked{% endif %}>
+                                    value="{{ category.id }}" id="category-{{ category.id }}" 
+                                    {% if category.id|stringformat:"i" in request.GET.getlist|default:"" %}checked{% endif %}>
+                            <label class="form-check-label" for="category-{{ category.id }}">
                                 <label class="form-check-label" for="category-{{ category.id }}">
                                     {{ category.name }}
                                 </label>
                             </div>
                             {% endfor %}
                         </div>
+
+                        <input type="hidden" name="sort" value="{{ request.GET.sort|default:'default' }}">
+                        <input type="hidden" name="items_per_page" value="{{ request.GET.items_per_page|default:'9' }}">
+
                         <!-- Додаємо кнопку фільтрації тут -->
                         <div class="filter-action mt-3">
                             <span id="selected-filters-count" class="me-2">Послуги: {{ total_services }}</span>
@@ -84,7 +91,7 @@
                             <div class="product-card">
                                 <div class="product-image">
                                     <a href="{% url 'service_detail' service.id %}">
-                                        <img src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }}">
+                                        <img src="{% if service.image %}{{ service.image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}" alt="{{ service.name }}">
                                         <div class="product-overlay">
                                             <button class="btn btn-primary add-to-cart-icon" data-service-id="{{ service.id }}"><i class="fas fa-shopping-cart"></i></button>
                                             <button class="btn btn-light"><i class="fas fa-heart"></i></button>
@@ -93,8 +100,8 @@
                                     {% if service.created_at|date:'Y-m-d' > '2023-01-01'|date:'Y-m-d' %}
                                     <span class="badge bg-success">Новинка</span>
                                     {% endif %}
-                                    {% if service.category %}
-                                    <span class="badge category-badge">{{ service.category.name }}</span>
+                                    {% if service.categories.all %}
+                                    <span class="badge category-badge">{{ service.categories.first.name }}</span>
                                     {% endif %}
                                 </div>
                                 <div class="product-info">
@@ -114,7 +121,7 @@
                     <ul class="pagination">
                         {% if current_page > 1 %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ current_page|add:'-1' }}&items_per_page={{ items_per_page }}&sort={{ sort_by }}{% if request.GET.category %}&category={{ request.GET.category }} {% endif %}">
+                            <a class="page-link" href="?{% preserve_query_params page=current_page|add:'-1' %}">
                                 <i class="fas fa-chevron-left"></i>
                             </a>
                         </li>
@@ -126,14 +133,13 @@
 
                         {% for p in page_range %}
                             <li class="page-item {% if p == current_page %}active{% endif %}">
-                                <a class="page-link" href="?page={{ p }}&items_per_page={{ items_per_page }}&sort={{ sort_by }}{% if request.GET.category %}&category={{ request.GET.category }} {% endif %}">{{ p }}</a>
+                                <a class="page-link" href="?{% preserve_query_params page=p %}">{{ p }}</a>
                             </li>
                         {% endfor %}
 
-                        {% if current_page < total_pages %} 
+                        {% if current_page < total_pages %}
                             <li class="page-item">
-                                <a class="page-link"
-                                    href="?page={{ current_page|add:'1' }}&items_per_page={{ items_per_page }}&sort={{ sort_by }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+                                <a class="page-link" href="?{% preserve_query_params page=current_page|add:'1' %}">
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
                             </li>

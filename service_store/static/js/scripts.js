@@ -8,6 +8,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const filterPopup = document.getElementById('filter-popup');
     const selectedFiltersCount = document.getElementById('selected-filters-count');
     const showResultsBtn = document.getElementById('show-results-btn');
+    
+    // Функція для збереження вибраних категорій в localStorage
+    function saveSelectedCategories() {
+        const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+        const selectedCategories = Array.from(categoryCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+        localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
+    }
+    
+    // Функція для відновлення вибраних категорій з localStorage
+    function restoreSelectedCategories() {
+        const savedCategories = localStorage.getItem('selectedCategories');
+        if (savedCategories) {
+            const selectedCategories = JSON.parse(savedCategories);
+            const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+            
+            categoryCheckboxes.forEach(checkbox => {
+                if (selectedCategories.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+    }
 
     // Функція для збереження вибраного режиму відображення в localStorage
     function saveViewMode(mode) {
@@ -52,6 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateSelectedFiltersCount() {
         const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
         const selectedCategories = Array.from(categoryCheckboxes).filter(cb => cb.checked);
+        
+        // Зберігаємо вибрані категорії в localStorage
+        saveSelectedCategories();
         
         // Формуємо URL з вибраними категоріями
         const url = new URL(window.location.href);
@@ -117,6 +144,18 @@ document.addEventListener('DOMContentLoaded', function () {
         filterForm.submit();
     });
 
+    // Відновлюємо вибрані категорії з localStorage
+    restoreSelectedCategories();
+    
     // Початкове оновлення лічильника вибраних фільтрів
     updateSelectedFiltersCount();
+});
+
+// Зберігаємо вибрані категорії перед перезавантаженням сторінки
+window.addEventListener('beforeunload', function() {
+    const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+    const selectedCategories = Array.from(categoryCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+    localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
 });

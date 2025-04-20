@@ -5,14 +5,12 @@ from .models import Service, Category
 
 def service_list(request):
     services = Service.objects.all()
-    
-    # Отримання всіх категорій для фільтра
     categories = Category.objects.all()
     
     # Фільтрація за категоріями
     category_ids = request.GET.getlist('category')
     if category_ids:
-        services = services.filter(category_id__in=category_ids)
+        services = services.filter(categories__id__in=category_ids).distinct()
     
     # Сортування
     sort_by = request.GET.get('sort', 'default')

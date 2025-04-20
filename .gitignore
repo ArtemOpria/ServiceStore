@@ -13,3 +13,5 @@ service_store/*/migrations/*
 service_store/*/__pycache__/
 
 .env
+
+service_store/media/service_images/
