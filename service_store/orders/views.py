@@ -4,8 +4,10 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Order
 from services.models import Service
+from utils.decorators import login_required_with_message
 
 
 def order_list(request):
@@ -50,7 +52,7 @@ def cart(request):
     return render(request, 'orders/cart.html', context)
 
 
-@login_required
+@login_required_with_message(message="Для оформлення замовлення необхідно увійти в акаунт.")
 def checkout(request):
     cart_items = []
     subtotal = 0

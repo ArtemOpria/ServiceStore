@@ -38,10 +38,18 @@
                         <i class="fas fa-user"></i>
                     </a>
                 {% endif %}
-                <a class="nav-link" href="">
-                    <i class="fas fa-search"></i>
-                </a>
-                <a class="nav-link" href="">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <div class="dropdown-menu p-3" aria-labelledby="searchDropdown" style="min-width: 300px;">
+                        <form class="d-flex" action="{% url 'search_services' %}" method="GET">
+                            <input class="form-control me-2" type="search" name="query" placeholder="Пошук послуг..." aria-label="Search">
+                            <button class="btn btn-outline-success" type="submit">Пошук</button>
+                        </form>
+                    </div>
+                </div>
+                <a class="nav-link" href="{% url 'favorites' %}">
                     <i class="fas fa-heart"></i>
                 </a>
                 <a class="nav-link" href="{% url 'cart' %}">

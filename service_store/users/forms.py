@@ -81,7 +81,7 @@ class CustomAuthenticationForm(AuthenticationForm):
     )
 
     error_messages = {
-        'invalid_login': 'Будь ласка, введіть правильну електронну пошту та пароль.',
+        'invalid_login': 'Елекронна пошта або пароль введено невірно',
         'inactive': 'Цей обліковий запис неактивний.'
     }
 

@@ -1,6 +1,42 @@
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
+from django.urls import reverse
 
-from .models import Service, Category
+from .models import Service, Category, Review
+from utils.decorators import login_required_with_message
+
+@login_required_with_message(message="Для перегляду списку бажань необхідно увійти в акаунт.")
+def favorites(request):
+    favorite_services = request.user.favorite_services.all()
+    return render(request, 'services/favorites.html', {
+        'favorite_services': favorite_services
+    })
+
+
+def search_services(request):
+    query = request.GET.get('query', '')
+    services = Service.objects.all()
+    
+    if query:
+        services = services.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(categories__name__icontains=query)
+        ).distinct()
+    
+    categories = Category.objects.all()
+    
+    context = {
+        'services': services,
+        'categories': categories,
+        'query': query,
+        'total_services': services.count(),
+    }
+    
+    return render(request, 'services/search_results.html', context)
 
 
 def service_list(request):
@@ -75,4 +111,81 @@ def service_list(request):
 
 def service_detail(request, service_id):
     service = get_object_or_404(Service, id=service_id)
-    return render(request, 'services/service_detail.html', {'service': service})
+    reviews = service.reviews.all().order_by('-created_at')
+    review_form = None
+    user_review = None
+    
+    if request.user.is_authenticated:
+        try:
+            user_review = reviews.get(user=request.user)
+        except Review.DoesNotExist:
+            from .forms import ReviewForm
+            review_form = ReviewForm()
+    
+    if request.method == 'POST' and request.user.is_authenticated:
+        from .forms import ReviewForm
+        if user_review:
+            review_form = ReviewForm(request.POST, instance=user_review)
+        else:
+            review_form = ReviewForm(request.POST)
+            
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.service = service
+            review.save()
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'errors': review_form.errors})
+    
+    context = {
+        'service': service,
+        'reviews': reviews,
+        'review_form': review_form,
+        'user_review': user_review,
+        'reviews_count': reviews.count()
+    }
+    
+    return render(request, 'services/service_detail.html', context)
+
+
+@login_required_with_message(message="Для додавання послуги до списку бажань необхідно увійти в акаунт.")
+def toggle_favorite(request, service_id):
+    service = get_object_or_404(Service, id=service_id)
+    user = request.user
+    
+    if service in user.favorite_services.all():
+        user.favorite_services.remove(service)
+        is_favorite = False
+    else:
+        user.favorite_services.add(service)
+        is_favorite = True
+    
+    # Get the count of favorite services for the user
+    favorite_count = user.favorite_services.count()
+    
+    return JsonResponse({
+        'status': 'success',
+        'is_favorite': is_favorite,
+        'favorite_count': favorite_count
+    })
+
+
+def check_auth_for_cart(request, service_id):
+    """
+    Перевіряє авторизацію користувача для додавання товару до кошика.
+    Якщо користувач не авторизований, перенаправляє на сторінку входу.
+    """
+    if not request.user.is_authenticated:
+        login_url = reverse('login') + '?next=' + request.META.get('HTTP_REFERER', '/')
+        return JsonResponse({
+            'status': 'redirect',
+            'redirect_url': login_url,
+            'message': "Для додавання товару до кошика необхідно увійти в акаунт."
+        })
+    
+    # Якщо користувач авторизований, повертаємо успішну відповідь
+    return JsonResponse({
+        'status': 'success',
+        'is_authenticated': True
+    })

@@ -78,6 +78,7 @@
         </div>
         {% endif %}
         
+        {% if cart_items %}
         <!-- Блок з підсумками замовлення -->
         <div class="col-lg-4">
             <div class="cart-totals">
@@ -95,6 +96,7 @@
                 </a>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 
@@ -102,6 +104,9 @@
 <script src="{% static 'js/cart.js' %}"></script>
 <script>
     function updateQuantity(itemId, action) {
+        // Ensure itemId is a string for consistency
+        itemId = String(itemId);
+        
         // Оновлення кількості товару через функцію з cart.js
         const newQuantity = updateItemQuantity(itemId, action);
         
@@ -115,8 +120,13 @@
         const priceElement = document.querySelector(`tr[data-item-id="${itemId}"] .cart-product-price`);
         const totalElement = document.querySelector(`tr[data-item-id="${itemId}"] .cart-product-total`);
         if (priceElement && totalElement) {
-            const price = parseFloat(priceElement.textContent.replace('₴', ''));
-            totalElement.textContent = `₴${(price * newQuantity).toFixed(2)}`;
+            // Ensure we're parsing a valid number by removing currency symbol and any whitespace
+            const priceText = priceElement.textContent.replace('₴', '').trim();
+            const price = parseFloat(priceText) || 0; // Default to 0 if parsing fails
+            
+            // Calculate total and format with 2 decimal places
+            const total = price * newQuantity;
+            totalElement.textContent = `₴${total.toFixed(2)}`;
         }
         
         // Оновлення загальної суми замовлення
@@ -164,7 +174,10 @@
         
         // Підрахунок загальної суми всіх товарів
         document.querySelectorAll('.cart-product-total').forEach(element => {
-            subtotal += parseFloat(element.textContent.replace('₴', ''));
+            // Ensure we're parsing a valid number by removing currency symbol and any whitespace
+            const priceText = element.textContent.replace('₴', '').trim();
+            const price = parseFloat(priceText) || 0; // Default to 0 if parsing fails
+            subtotal += price;
         });
         
         // Оновлення відображення суми
@@ -172,9 +185,14 @@
         const totalElement = document.querySelector('.cart-totals-value:last-of-type');
         
         if (subtotalElement && totalElement) {
+            // Format with 2 decimal places
             subtotalElement.textContent = `₴${subtotal.toFixed(2)}`;
             totalElement.textContent = `₴${subtotal.toFixed(2)}`; // Тут можна додати логіку для знижок, доставки тощо
         }
+        
+        // Update cart in session storage to match displayed values
+        const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
+        updateServerCart(cart);
     }
 </script>
 {% endblock content %}

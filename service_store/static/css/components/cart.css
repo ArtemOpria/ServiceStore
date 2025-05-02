@@ -32,7 +32,7 @@
 }
 
 .breadcrumb-item a:hover {
-    color: #337c37;
+    color: #fff;
 }
 
 .breadcrumb-item.active {
@@ -239,6 +239,7 @@
 
 .empty-cart .arrow-catalog {
     font-size: 1.5rem;
+    margin: 0;
 }
 
 

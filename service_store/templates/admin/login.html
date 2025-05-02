@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-login.css' %}">
+{% endblock %}
+
 {% block hero %}
 <div class="auth-hero">
     <div class="auth-container">
@@ -8,19 +12,38 @@
             <h1 class="auth-title">Вхід в адмін-панель</h1>
             <form method="post" class="auth-form" novalidate>
                 {% csrf_token %}
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    {% else %}
+                        Будь ласка, виправте помилки нижче.
+                    {% endif %}
+                </div>
+                {% endif %}
                 <div class="form-group">
-                    <label for="id_username">Ім'я адміністратора</label>
-                    <input type="text" name="username" id="id_username" class="form-control" required>
-                    <div class="invalid-tooltip">
-                        Введіть ім'я адміністратора
+                    <label for="id_username">{{ form.username.label }}</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
                     </div>
+                    {% endif %}
                 </div>
                 <div class="form-group">
-                    <label for="id_password">Пароль</label>
-                    <input type="password" name="password" id="id_password" class="form-control" required>
-                    <div class="invalid-tooltip">
-                        Введіть ваш пароль
+                    <label for="id_password">{{ form.password.label }}</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.password.errors %}
+                            {{ error }}
+                        {% endfor %}
                     </div>
+                    {% endif %}
                 </div>
                 <button type="submit" class="btn btn-primary auth-button">Увійти</button>
             </form>

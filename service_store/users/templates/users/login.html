@@ -14,6 +14,13 @@
     <div class="auth-container">
         <div class="auth-box">
             <h1 class="auth-title">Вхід</h1>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
             <form method="post" class="auth-form" novalidate>
                 {% csrf_token %}
                 {% for field in form %}
@@ -42,6 +49,15 @@
             </form>
             <p class="auth-link">Немає акаунту? <a href="{% url 'register' %}">Зареєструватися</a></p>
             <p class="auth-link">Адміністратор? <a href="/admin/">Увійти як адміністратор</a></p>
+            {% if messages %}
+                <div class="messages-container">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

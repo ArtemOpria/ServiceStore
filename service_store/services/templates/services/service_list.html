@@ -20,6 +20,7 @@
 
 {% block content %}
 <div class="container">
+    {% csrf_token %}
     <form id="filter-form" method="get" action="{% url 'service_list' %}">
         <div class="row">
             <!-- Ліва панель з фільтрами -->
@@ -94,7 +95,7 @@
                                         <img src="{% if service.image %}{{ service.image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}" alt="{{ service.name }}">
                                         <div class="product-overlay">
                                             <button class="btn btn-primary add-to-cart-icon" data-service-id="{{ service.id }}"><i class="fas fa-shopping-cart"></i></button>
-                                            <button class="btn btn-light"><i class="fas fa-heart"></i></button>
+                                            <button class="btn btn-light favorite-btn" data-service-id="{{ service.id }}"><i class="{% if service in user.favorite_services.all %}fas{% else %}far{% endif %} fa-heart"></i><span class="d-none">{% if service in user.favorite_services.all %}Видалити зі списку бажань{% else %}Додати до списку бажань{% endif %}</span></button>
                                         </div>
                                     </a>
                                     {% if service.created_at|date:'Y-m-d' > '2023-01-01'|date:'Y-m-d' %}
@@ -157,6 +158,7 @@
 </div>
 
 <script src="{% static 'js/scripts.js' %}"></script>
+<script src="{% static 'js/cart.js' %}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

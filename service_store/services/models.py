@@ -1,4 +1,10 @@
 from django.db import models
+import os
+
+def service_image_path(instance, filename):
+    # Генеруємо шлях для збереження зображення: media/services/<filename>
+    return os.path.join('services', filename)
+
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -20,10 +26,11 @@ class Service(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     categories = models.ManyToManyField(Category, related_name='services', blank=True)
-    image = models.ImageField(upload_to='service_images/', null=True, blank=True)
+    image = models.ImageField(upload_to=service_image_path, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='favorite_services', blank=True)
 
     def __str__(self):
         return self.name

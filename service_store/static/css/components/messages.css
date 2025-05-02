@@ -1,0 +1,36 @@
+.messages-container {
+  margin-top: 1.5rem;
+}
+
+.alert {
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.alert-info {
+  background-color: rgba(51, 124, 55, 0.15);
+  color: #337c37;
+  border-left: 4px solid #337c37;
+}
+
+.alert-success {
+  background-color: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+  border-left: 4px solid #28a745;
+}
+
+.alert-warning {
+  background-color: rgba(255, 193, 7, 0.15);
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+  border-left: 4px solid #dc3545;
+}

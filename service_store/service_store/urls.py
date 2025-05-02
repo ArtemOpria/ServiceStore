@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from . import admin as admin_config  # Імпортуємо налаштування адмін-панелі
 
 
 urlpatterns = [

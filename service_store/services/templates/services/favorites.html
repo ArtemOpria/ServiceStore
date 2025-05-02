@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load url_helpers %}
+
+{% block hero %}
+<div class="page-header">
+    <div class="page-header-overlay">
+        <div class="container">
+            <h1>Список бажань</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Головна</a></li>
+                    <li class="breadcrumb-item active">Список бажань</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-12">
+            <div class="products-grid" id="products-container">
+                {% if favorite_services %}
+                    {% for service in favorite_services %}
+                        <div class="product-card">
+                            <div class="product-image">
+                                <a href="{% url 'service_detail' service.id %}">
+                                    <img src="{% if service.image %}{{ service.image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}" alt="{{ service.name }}">
+                                    <div class="product-overlay">
+                                        <button class="btn btn-primary add-to-cart-icon" data-service-id="{{ service.id }}"><i class="fas fa-shopping-cart"></i></button>
+                                        <button class="btn btn-light favorite-btn" data-service-id="{{ service.id }}"><i class="fas fa-heart"></i></button>
+                                    </div>
+                                </a>
+                                {% if service.created_at|date:'Y-m-d' > '2023-01-01'|date:'Y-m-d' %}
+                                <span class="badge bg-success">Новинка</span>
+                                {% endif %}
+                                {% if service.categories.all %}
+                                <span class="badge category-badge">{{ service.categories.first.name }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="product-info">
+                                <h3><a href="{% url 'service_detail' service.id %}">{{ service.name }}</a></h3>
+                                <p class="price">{{ service.price }} грн</p>
+                                <p class="description">{{ service.description|truncatechars:50 }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info w-100 text-center">У вас поки немає послуг в списку бажань</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="{% static 'js/favorites.js' %}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add event listeners for add-to-cart buttons
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-icon');
+        
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const serviceId = this.getAttribute('data-service-id');
+                if (serviceId) {
+                    // Call the addToCart function from cart.js
+                    addToCart(serviceId);
+                }
+            });
+        });
+        
+        // No need to add event listeners for favorite buttons here
+        // as they are already handled in favorites.js
+    });
+</script>
+{% endblock %}

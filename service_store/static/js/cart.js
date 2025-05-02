@@ -7,45 +7,119 @@ function initCart() {
     }
 }
 
+// Check if user is authenticated
+function isUserAuthenticated() {
+    // Look for a specific cookie or element that indicates authentication
+    // This is a simple check - you might need to adjust based on your authentication system
+    return document.body.classList.contains('user-authenticated');
+}
+
 // Add item to cart
 function addToCart(serviceId, quantity = 1) {
     initCart();
     
-    // Get current cart
-    let cart = JSON.parse(sessionStorage.getItem('cart'));
-    
-    // Add or update item in cart
-    if (cart[serviceId]) {
-        cart[serviceId] += quantity;
-    } else {
-        cart[serviceId] = quantity;
-    }
-    
-    // Save updated cart to session
-    sessionStorage.setItem('cart', JSON.stringify(cart));
-    
-    // Update server-side session
-    updateServerCart(cart);
-    
-    // Show success message
-    showCartNotification('Товар додано до кошика');
+    // Спочатку перевіряємо авторизацію користувача
+    fetch(`/services/check_auth_for_cart/${serviceId}/`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'redirect') {
+            // Показуємо повідомлення користувачу про необхідність авторизації
+            showCartNotification(data.message);
+            
+            // Перенаправляємо на сторінку входу через 2 секунди
+            setTimeout(() => {
+                window.location.href = data.redirect_url;
+            }, 2000);
+            
+            return;
+        }
+        
+        // Якщо користувач авторизований, продовжуємо додавання товару до кошика
+        // Get current cart
+        let cart = JSON.parse(sessionStorage.getItem('cart'));
+        
+        // Add or update item in cart
+        if (cart[serviceId]) {
+            cart[serviceId] += quantity;
+        } else {
+            cart[serviceId] = quantity;
+        }
+        
+        // Save updated cart to session
+        sessionStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update server-side session
+        updateServerCart(cart);
+        
+        // Show success message
+        showCartNotification('Товар додано до кошика');
+    })
+    .catch(error => {
+        console.error('Error checking authentication:', error);
+        showCartNotification('Помилка при додаванні товару до кошика');
+    });
 }
 
 // Update server-side cart
 function updateServerCart(cart) {
+    // Ensure cart data is properly formatted with numeric values
+    const formattedCart = {};
+    
+    // Convert all cart values to integers
+    for (const [key, value] of Object.entries(cart)) {
+        formattedCart[key] = parseInt(value) || 0; // Default to 0 if parsing fails
+    }
+    
     fetch('/orders/update_cart/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify({ cart: cart })
+        body: JSON.stringify({ cart: formattedCart })
     })
-    .then(response => response.json())
+    .then(response => {
+        // Перевіряємо, чи це перенаправлення (статус 302)
+        if (response.status === 302) {
+            // Отримуємо URL для перенаправлення
+            const redirectUrl = response.headers.get('Location');
+            
+            // Показуємо повідомлення користувачу про необхідність авторизації
+            showCartNotification('Для додавання товару до кошика необхідно увійти в акаунт.');
+            
+            // Перенаправляємо на сторінку входу через 2 секунди
+            setTimeout(() => {
+                window.location.href = redirectUrl || '/users/login/';
+            }, 2000);
+            
+            // Повертаємо об'єкт з помилкою, щоб перервати ланцюжок then
+            return { status: 'redirect' };
+        }
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
-        // Update cart icon with unique items count instead of total quantity
-        const uniqueItemsCount = Object.keys(cart).length;
-        updateCartIcon(uniqueItemsCount);
+        // Пропускаємо обробку, якщо це було перенаправлення
+        if (data.status === 'redirect') {
+            return;
+        }
+        
+        if (data.status === 'success') {
+            // Update cart icon with unique items count
+            const uniqueItemsCount = Object.keys(formattedCart).length;
+            updateCartIcon(uniqueItemsCount);
+        } else {
+            console.error('Error updating cart:', data.message);
+        }
     })
     .catch(error => {
         console.error('Error updating cart:', error);
@@ -95,8 +169,13 @@ function updateCartIcon(totalItems) {
         // Check if we're on the cart page
         const isCartPage = window.location.pathname.includes('/orders/cart/');
         
+        // Only show cart badge if we have items AND
+        // either we're authenticated OR we're on a page that should show the cart for anonymous users
+        const shouldShowBadge = totalItems > 0 && !isCartPage && 
+            (isUserAuthenticated() || window.location.pathname.includes('/services/'));
+        
         // Update badge content and visibility
-        if (totalItems > 0 && !isCartPage) {
+        if (shouldShowBadge) {
             badge.textContent = totalItems;
             badge.style.display = 'flex';
         } else {
@@ -125,15 +204,23 @@ function getCookie(name) {
 function updateItemQuantity(serviceId, action) {
     initCart();
     
+    // Ensure serviceId is a string
+    serviceId = String(serviceId);
+    
     // Get current cart
     let cart = JSON.parse(sessionStorage.getItem('cart'));
     
+    // Ensure the item exists in cart
+    if (!cart[serviceId]) {
+        cart[serviceId] = 1;
+    }
+    
     // Update quantity based on action
     if (action === 'increase') {
-        cart[serviceId] += 1;
+        cart[serviceId] = parseInt(cart[serviceId]) + 1;
     } else if (action === 'decrease') {
-        if (cart[serviceId] > 1) {
-            cart[serviceId] -= 1;
+        if (parseInt(cart[serviceId]) > 1) {
+            cart[serviceId] = parseInt(cart[serviceId]) - 1;
         }
     }
     
@@ -143,7 +230,7 @@ function updateItemQuantity(serviceId, action) {
     // Update server-side session
     updateServerCart(cart);
     
-    return cart[serviceId]; // Return new quantity
+    return parseInt(cart[serviceId]); // Return new quantity as a number
 }
 
 // Remove item from cart
@@ -176,6 +263,61 @@ document.addEventListener('DOMContentLoaded', function() {
     const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
     const uniqueItemsCount = Object.keys(cart).length;
     
-    // Update cart icon with the unique items count
-    updateCartIcon(uniqueItemsCount);
+    // Check if we need to sync with server cart (for authenticated users)
+    // or clear cart (for users who just logged out)
+    fetch('/orders/update_cart/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ cart: cart, check_auth: true })
+    })
+    .then(response => {
+        // Перевіряємо, чи це перенаправлення (статус 302)
+        if (response.status === 302) {
+            // Для перевірки автентифікації ми не перенаправляємо користувача,
+            // а просто обробляємо як неавторизованого
+            return response.json().then(() => {
+                return { is_authenticated: false };
+            }).catch(() => {
+                return { is_authenticated: false };
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.is_authenticated) {
+            // User is authenticated, update the body class
+            document.body.classList.add('user-authenticated');
+            
+            // If server has a cart and we need to sync
+            if (data.has_server_cart) {
+                // Update local cart from server if needed
+                sessionStorage.setItem('cart', JSON.stringify(data.cart || {}));
+                updateCartIcon(Object.keys(data.cart || {}).length);
+                return;
+            }
+        } else {
+            // User is not authenticated, remove the body class
+            document.body.classList.remove('user-authenticated');
+            
+            // If we're on a page where anonymous users shouldn't see cart items
+            if (!window.location.pathname.includes('/services/')) {
+                // Clear cart for anonymous users on non-service pages
+                sessionStorage.setItem('cart', JSON.stringify({}));
+                updateCartIcon(0);
+                return;
+            }
+        }
+        
+        // Default: update cart icon with the unique items count
+        updateCartIcon(uniqueItemsCount);
+    })
+    .catch(error => {
+        console.error('Error checking authentication status:', error);
+        // Fallback to default behavior
+        updateCartIcon(uniqueItemsCount);
+    });
 });
