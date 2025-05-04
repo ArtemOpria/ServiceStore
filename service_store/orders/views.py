@@ -5,14 +5,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Order
+from .models import Order, OrderItem
 from services.models import Service
 from utils.decorators import login_required_with_message
-
-
-def order_list(request):
-    orders = Order.objects.filter(user=request.user)
-    return render(request, 'orders/order_list.html', {'orders': orders})
 
 
 def order_detail(request, order_id):
@@ -43,10 +38,12 @@ def cart(request):
         
         total = subtotal
     
+    # Передаємо помилки форми в контекст, якщо вони є
     context = {
         'cart_items': cart_items,
         'subtotal': subtotal,
-        'total': total
+        'total': total,
+        'form_errors': form_errors if 'form_errors' in locals() else {}
     }
     
     return render(request, 'orders/cart.html', context)
@@ -76,39 +73,126 @@ def checkout(request):
         
         total = subtotal
     
+    # Якщо кошик порожній, перенаправляємо на сторінку кошика
+    if not cart_items:
+        messages.warning(request, 'Ваш кошик порожній. Додайте послуги перед оформленням замовлення.')
+        return redirect('cart')
+    
+    # Отримуємо дані профілю користувача
+    user_profile = None
+    phone = ''
+    address = ''
+    city = ''
+    zip_code = ''
+    
+    try:
+        user_profile = request.user.profile
+        phone = user_profile.phone_number
+        address = user_profile.address
+        city = user_profile.city
+        zip_code = user_profile.zip_code
+    except:
+        pass
+    
     if request.method == 'POST':
-        # Process the checkout form
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        zip_code = request.POST.get('zip')
-        payment_method = request.POST.get('payment_method')
+        # Валідація форми
+        form_valid = True
+        form_errors = {}
         
-        # Create orders for each item in the cart
-        if cart_items:
+        # Отримання та валідація даних форми
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address = request.POST.get('address', '').strip()
+        city = request.POST.get('city', '').strip()
+        zip_code = request.POST.get('zip', '').strip()
+        delivery_method = request.POST.get('delivery_method', '')
+        payment_method = request.POST.get('payment_method', '')
+        save_info = 'save_info' in request.POST
+        
+        # Перевірка обов'язкових полів
+        if not first_name:
+            form_valid = False
+            form_errors['first_name'] = 'Це поле обов\'язкове'
+        
+        if not last_name:
+            form_valid = False
+            form_errors['last_name'] = 'Це поле обов\'язкове'
+        
+        if not email:
+            form_valid = False
+            form_errors['email'] = 'Це поле обов\'язкове'
+        elif '@' not in email:
+            form_valid = False
+            form_errors['email'] = 'Введіть коректну електронну адресу'
+        
+        if not phone:
+            form_valid = False
+            form_errors['phone'] = 'Це поле обов\'язкове'
+        
+        if not address:
+            form_valid = False
+            form_errors['address'] = 'Це поле обов\'язкове'
+        
+        if not city:
+            form_valid = False
+            form_errors['city'] = 'Це поле обов\'язкове'
+        
+        if not zip_code:
+            form_valid = False
+            form_errors['zip'] = 'Це поле обов\'язкове'
+        
+        if not delivery_method:
+            form_valid = False
+            form_errors['delivery_method'] = 'Оберіть спосіб доставки'
+            
+        if not payment_method:
+            form_valid = False
+            form_errors['payment_method'] = 'Оберіть спосіб оплати'
+        
+        # Якщо форма валідна, створюємо замовлення
+        if form_valid and cart_items:
+            order = Order(
+                user=request.user,
+                total_price=total,
+                status='pending',
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+                address=address,
+                city=city,
+                zip_code=zip_code,
+                delivery_method=delivery_method,
+                payment_method=payment_method
+            )
+            order.save()
+            
+            # Створюємо елементи замовлення
             for item in cart_items:
-                order = Order(
-                    user=request.user,
+                order_item = OrderItem(
+                    order=order,
                     service=item['service'],
-                    total_price=item['total_price']
+                    quantity=item['quantity'],
+                    unit_price=item['service'].price,
+                    subtotal=item['total_price']
                 )
-                order.save()
+                order_item.save()
             
-            # Send confirmation email
-            from django.core.mail import send_mail
-            from django.template.loader import render_to_string
-            from django.utils.html import strip_tags
-            
+            # Відправляємо підтвердження на електронну пошту
             subject = 'Підтвердження замовлення'
             html_message = render_to_string('orders/email/order_confirmation.html', {
                 'user': request.user,
                 'cart_items': cart_items,
                 'total': total,
                 'first_name': first_name,
-                'last_name': last_name
+                'last_name': last_name,
+                'order': order,
+                'address': address,
+                'city': city,
+                'zip_code': zip_code,
+                'phone': phone
             })
             plain_message = strip_tags(html_message)
             from_email = 'noreply@servicestore.com'
@@ -116,20 +200,74 @@ def checkout(request):
             
             send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
             
-            # Clear the cart
+            # Очищаємо кошик
             if 'cart' in request.session:
                 del request.session['cart']
                 request.session.modified = True
             
-            # Redirect to order list with success message
-            from django.contrib import messages
+            # Якщо користувач вибрав опцію збереження інформації
+            if save_info:
+                user = request.user
+                user.first_name = first_name
+                user.last_name = last_name
+                user.email = email
+                user.save()
+                
+                # Зберігаємо додаткову інформацію в профілі користувача
+                try:
+                    profile = user.profile
+                    profile.phone_number = phone
+                    profile.address = address
+                    profile.city = city
+                    profile.zip_code = zip_code
+                    profile.save()
+                except:
+                    # Якщо профіль не існує, створюємо його
+                    from users.models import Profile
+                    profile = Profile(user=user, phone_number=phone, address=address, city=city, zip_code=zip_code)
+                    profile.save()
+                
+            # Перенаправляємо на сторінку профілю з активною вкладкою історії замовлень
             messages.success(request, 'Ваше замовлення успішно оформлено! Підтвердження надіслано на вашу електронну пошту.')
-            return redirect('order_list')
-    
+            
+            # Додаємо JavaScript для очищення кошика на стороні клієнта
+            response = redirect('profile')
+            response.set_cookie('active_tab', 'orders', max_age=30)  # Встановлюємо cookie для активації вкладки замовлень
+            return response
+        else:
+            # Якщо форма невалідна, показуємо помилки
+            for field, error in form_errors.items():
+                messages.error(request, f'{error}')
+        
     context = {
         'cart_items': cart_items,
         'subtotal': subtotal,
-        'total': total
+        'total': total,
+        'user_phone': phone,
+        'user_address': address,
+        'user_city': city,
+        'user_zip': zip_code,
+        'form_errors': form_errors if 'form_errors' in locals() else {}
     }
     
     return render(request, 'orders/checkout.html', context)
+
+
+@login_required_with_message(message="Для повторного замовлення необхідно увійти в акаунт.")
+def reorder(request, order_id):
+    # Отримуємо замовлення за ID та перевіряємо, що воно належить поточному користувачу
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # Створюємо новий кошик з товарами з замовлення
+    new_cart = {}
+    
+    # Додаємо кожен товар з замовлення до кошика
+    for item in order.items.all():
+        new_cart[str(item.service.id)] = item.quantity
+    
+    # Зберігаємо новий кошик в сесії
+    request.session['cart'] = new_cart
+    request.session.modified = True
+    
+    # Перенаправляємо на сторінку кошика
+    return redirect('cart')

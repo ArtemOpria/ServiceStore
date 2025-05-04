@@ -84,21 +84,52 @@
             <div class="cart-totals">
                 <h2>Підсумок замовлення</h2>
                 <div class="cart-totals-row">
-                    <span class="cart-totals-label">Сума</span>
-                    <span class="cart-totals-value">₴{{ subtotal }}</span>
-                </div>
-                <div class="cart-totals-row">
                     <span class="cart-totals-label">Загалом</span>
                     <span class="cart-totals-value">₴{{ total }}</span>
                 </div>
                 <a href="{% url 'checkout' %}" class="checkout-btn">
                     Оформити замовлення
                 </a>
+                <button type="button" class="clear-cart-btn" onclick="clearCartAndUpdateUI()">
+                    <i class="fas fa-trash me-2"></i> Очистити кошик
+                </button>
             </div>
         </div>
         {% endif %}
     </div>
 </div>
+
+<!-- CSS для анімації зміни суми -->
+<style>
+    @keyframes highlight-change {
+        0% { color: inherit; }
+        50% { color: #28a745; font-weight: bold; }
+        100% { color: inherit; }
+    }
+    
+    .price-updated {
+        animation: highlight-change 1s ease;
+    }
+    
+    .clear-cart-btn {
+        display: block;
+        width: 100%;
+        padding: 10px 15px;
+        margin-top: 10px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        text-align: center;
+        transition: background-color 0.3s ease;
+    }
+    
+    .clear-cart-btn:hover {
+        background-color: #c82333;
+        cursor: pointer;
+    }
+</style>
 
 <!-- JavaScript для функціоналу кошика -->
 <script src="{% static 'js/cart.js' %}"></script>
@@ -180,19 +211,47 @@
             subtotal += price;
         });
         
-        // Оновлення відображення суми
-        const subtotalElement = document.querySelector('.cart-totals-value:first-of-type');
-        const totalElement = document.querySelector('.cart-totals-value:last-of-type');
+        // Оновлення відображення суми з анімацією
+        const totalElement = document.querySelector('.cart-totals-value');
         
-        if (subtotalElement && totalElement) {
+        if (totalElement) {
             // Format with 2 decimal places
-            subtotalElement.textContent = `₴${subtotal.toFixed(2)}`;
-            totalElement.textContent = `₴${subtotal.toFixed(2)}`; // Тут можна додати логіку для знижок, доставки тощо
+            totalElement.textContent = `₴${subtotal.toFixed(2)}`;
+            
+            // Додаємо анімацію
+            totalElement.classList.remove('price-updated');
+            void totalElement.offsetWidth; // Трюк для перезапуску анімації
+            totalElement.classList.add('price-updated');
         }
         
         // Update cart in session storage to match displayed values
         const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
         updateServerCart(cart);
+    }
+    
+    // Функція для очищення всього кошика та оновлення інтерфейсу
+    function clearCartAndUpdateUI() {
+        if (confirm('Ви впевнені, що хочете очистити кошик?')) {
+            // Очищення кошика через глобальну функцію з cart.js
+            clearCart();
+            
+            // Оновлення відображення - показуємо порожній кошик
+            const rowContainer = document.querySelector('.row');
+            if (rowContainer) {
+                rowContainer.innerHTML = `
+                    <div class="col-12 d-flex justify-content-center align-items-center">
+                        <div class="empty-cart text-center py-5 my-4">
+                            <i class="fas fa-shopping-cart fa-4x mb-4"></i>
+                            <h3>Ваш кошик порожній</h3>
+                            <p>Додайте товари до кошика, щоб продовжити</p>
+                            <a href="{% url 'service_list' %}" class="btn btn-success mt-3">
+                                <i class="fas fa-arrow-left me-2"></i> Перейти до каталогу
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
     }
 </script>
 {% endblock content %}

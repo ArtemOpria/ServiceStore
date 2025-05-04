@@ -45,7 +45,7 @@
     
     <p>Шановний(а) {{ first_name }} {{ last_name }},</p>
     
-    <p>Дякуємо за ваше замовлення! Ми отримали ваше замовлення та обробляємо його.</p>
+    <p>Дякуємо за ваше замовлення! Ми отримали ваше замовлення №{{ order.id }} та обробляємо його.</p>
     
     <div class="order-details">
         <h2>Деталі замовлення:</h2>
@@ -60,6 +60,23 @@
         
         <div class="order-total">
             <p>Загальна сума: ₴{{ total }}</p>
+        </div>
+        
+        <div class="delivery-info">
+            <h2>Інформація про доставку:</h2>
+            <p><strong>Адреса:</strong> {{ address }}</p>
+            <p><strong>Місто:</strong> {{ city }}</p>
+            <p><strong>Поштовий індекс:</strong> {{ zip_code }}</p>
+            <p><strong>Спосіб доставки:</strong> 
+                {% if order.delivery_method == 'nova_poshta' %}
+                    Нова Пошта
+                {% elif order.delivery_method == 'ukr_poshta' %}
+                    Укрпошта
+                {% elif order.delivery_method == 'courier' %}
+                    Кур'єрська доставка
+                {% endif %}
+            </p>
+            <p><strong>Телефон:</strong> {{ phone }}</p>
         </div>
     </div>
     

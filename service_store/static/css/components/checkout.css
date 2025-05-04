@@ -1,0 +1,189 @@
+/* Checkout Page Styles */
+
+/* Імпортуємо базові стилі з profile.css та cart.css */
+@import url('profile.css');
+@import url('cart.css');
+
+/* Стилі для заголовка сторінки */
+.page-header-overlay {
+    background-color: rgba(51, 124, 55, 0.7);
+    padding: 40px 0;
+}
+
+.page-header h1 {
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 3.5rem;
+    color: #ffffff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Стилі для форми оформлення замовлення */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-title {
+    color: #337c37;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e8f5e9;
+    padding-bottom: 0.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-control {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #337c37;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(51, 124, 55, 0.2);
+}
+
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Стилі для радіо-кнопок способу оплати */
+.form-check-input {
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #337c37;
+    border-color: #337c37;
+}
+
+/* Стилі для розділу способу доставки */
+.form-check {
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.form-check:hover .form-check-label {
+    color: #337c37;
+}
+
+.form-check-label {
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.form-check-label {
+    cursor: pointer;
+    padding-left: 0.5rem;
+}
+
+/* Стилі для кнопки підтвердження замовлення */
+.checkout-btn {
+    background-color: #337c37;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.checkout-btn:hover {
+    background-color: #2e6b31;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Стилі для блоку з підсумками замовлення */
+.cart-totals {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    position: sticky;
+    top: 20px;
+}
+
+.cart-totals h2 {
+    color: #337c37;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    border-bottom: 2px solid #e8f5e9;
+    padding-bottom: 0.5rem;
+}
+
+.cart-totals-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e8f5e9;
+}
+
+.cart-totals-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.cart-totals-label {
+    color: #555;
+}
+
+.cart-totals-value {
+    font-weight: 600;
+    color: #337c37;
+}
+
+.continue-shopping {
+    display: inline-block;
+    color: #337c37;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.continue-shopping:hover {
+    color: #2e6b31;
+    text-decoration: none;
+    transform: translateX(-5px);
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .card {
+        padding: 1.5rem;
+    }
+    
+    .cart-totals {
+        position: static;
+        margin-top: 2rem;
+    }
+}

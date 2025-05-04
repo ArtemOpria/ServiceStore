@@ -1,10 +1,171 @@
 {% extends 'base.html' %}
+{% load l10n %}
+{% load static %}
 
 {% block content %}
-    <h1>Order #{{ order.id }}</h1>
-    <p><strong>Service:</strong> {{ order.service.name }}</p>
-    <p><strong>Order Date:</strong> {{ order.order_date }}</p>
-    <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
-    <p><strong>Status:</strong> {{ order.status }}</p>
-    <a href="{% url 'order_list' %}" class="btn btn-secondary">Back to Orders</a>
+<link rel="stylesheet" href="{% static 'css/components/order_detail.css' %}">
+
+<div class="profile-container">
+    <div class="row">
+        <!-- Order Header -->
+        <div class="col-12">
+            <div class="profile-header d-flex flex-column flex-md-row align-items-center align-items-md-center">
+                <div class="profile-avatar me-md-4 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="text-center text-md-start">
+                    <h1>Замовлення #{{ order.id }}</h1>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{% url 'profile' %}?active_tab=orders" class="btn btn-secondary return-orders-btn">
+                                    <i class="fas fa-arrow-left me-2"></i>Повернутися до списку замовлень
+                                </a>
+                                <a href="{% url 'reorder' order.id %}" class="btn btn-primary">
+                                    <i class="fas fa-redo-alt me-2"></i>Повторити замовлення
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Order Content -->
+        <div class="col-12">
+            <div class="profile-card">
+                <h2><i class="fas fa-info-circle me-2"></i>Інформація про замовлення</h2>
+                <div class="row mb-4">
+                    <!-- Деталі замовлення -->
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <div class="order-info-card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Деталі замовлення</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless info-table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-hashtag me-2"></i>Номер замовлення:</td>
+                                            <td class="fw-bold">{{ order.id }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-calendar-alt me-2"></i>Дата замовлення:</td>
+                                            <td class="fw-bold">{{ order.order_date|date:"d.m.Y H:i" }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-money-bill-wave me-2"></i>Загальна сума:</td>
+                                            <td class="fw-bold">₴{{ order.total_price }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-info-circle me-2"></i>Статус:</td>
+                                            <td>
+                                                <span class="badge rounded-pill status-{{ order.status }}">
+                                                    {% if order.status == 'pending' %}
+                                                        <i class="fas fa-clock me-1"></i>Очікує обробки
+                                                    {% elif order.status == 'in_progress' %}
+                                                        <i class="fas fa-spinner me-1"></i>В обробці
+                                                    {% elif order.status == 'completed' %}
+                                                        <i class="fas fa-check me-1"></i>Виконано
+                                                    {% elif order.status == 'cancelled' %}
+                                                        <i class="fas fa-times me-1"></i>Скасовано
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-truck me-2"></i>Спосіб доставки:</td>
+                                            <td class="fw-bold">
+                                                {% if order.delivery_method == 'nova_poshta' %}
+                                                    Нова Пошта
+                                                {% elif order.delivery_method == 'ukr_poshta' %}
+                                                    Укрпошта
+                                                {% elif order.delivery_method == 'courier' %}
+                                                    Кур'єрська доставка
+                                                {% endif %}
+                                                {% if order.delivery_method == 'nova_poshta' or order.delivery_method == 'ukr_poshta' %}
+                                                    №{{ order.zip_code }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Інформація про клієнта -->
+                    <div class="col-md-6">
+                        <div class="order-info-card h-100">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Інформація про клієнта</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless info-table">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-user-tag me-2"></i>Ім'я та прізвище:</td>
+                                            <td class="fw-bold">{{ order.user.first_name }} {{ order.user.last_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-envelope me-2"></i>Email:</td>
+                                            <td class="fw-bold">{{ order.user.email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-phone me-2"></i>Телефон:</td>
+                                            <td class="fw-bold">{{ order.phone }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-map-marker-alt me-2"></i>Адреса:</td>
+                                            <td class="fw-bold">{{ order.address }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted"><i class="fas fa-city me-2"></i>Місто:</td>
+                                            <td class="fw-bold">{{ order.city }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-info-card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Послуги в замовленні</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Послуга</th>
+                                        <th>Кількість</th>
+                                        <th>Ціна за одиницю</th>
+                                        <th>Сума</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order.items.all %}
+                                    <tr>
+                                        <td>{{ item.service.name }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>₴{{ item.unit_price }}</td>
+                                        <td>₴{{ item.subtotal }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3" class="text-end">Підсумок:</th>
+                                        <th>₴{{ order.total_price }}</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

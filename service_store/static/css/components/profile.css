@@ -143,6 +143,27 @@
     border-bottom: 3px solid #e8f5e9;
 }
 
+.detail-btn {
+    background-color: #337c37;
+    --bs-btn-active-bg: #337c37;
+    color: white;
+    border: none;
+}
+
+.detail-btn:hover {
+    background-color: #2e6b31;
+}
+
+/* Стиль для бейджів статусу замовлення в таблиці */
+.status-badge {
+    position: static !important;
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
 @media (max-width: 768px) {
     .profile-header {
         padding: 1.5rem;

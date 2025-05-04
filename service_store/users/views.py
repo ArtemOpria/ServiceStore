@@ -56,8 +56,21 @@ def profile(request):
             return redirect('profile')
     else:
         form = ProfileForm(instance=profile)
+    
+    # Отримуємо замовлення користувача для вкладки історії замовлень
+    from orders.models import Order
+    orders = Order.objects.filter(user=request.user).order_by('-order_date')
+    
+    # Визначаємо активну вкладку (з URL-параметра або за замовчуванням)
+    active_tab = request.GET.get('active_tab', 'personal')
+    if active_tab not in ['personal', 'orders', 'settings']:
+        active_tab = 'personal'
 
-    return render(request, 'users/profile.html', {'form': form, 'active_tab': 'personal'})
+    return render(request, 'users/profile.html', {
+        'form': form, 
+        'orders': orders,
+        'active_tab': active_tab
+    })
 
 
 @login_required
@@ -71,9 +84,14 @@ def password_change(request):
             user = form.save()
             update_session_auth_hash(request, user)
             messages.success(request, 'Ваш пароль успішно змінено!')
+            # Отримуємо замовлення користувача для вкладки історії замовлень
+            from orders.models import Order
+            orders = Order.objects.filter(user=request.user).order_by('-order_date')
+            
             return render(request, 'users/profile.html', {
                 'form': profile_form,
                 'password_change_form': form,
+                'orders': orders,
                 'active_tab': 'settings'  # Changed from 'password' to 'settings'
             })
         else:
@@ -110,8 +128,13 @@ def password_change(request):
     else:
         form = PasswordChangeForm(request.user)
     
+    # Отримуємо замовлення користувача для вкладки історії замовлень
+    from orders.models import Order
+    orders = Order.objects.filter(user=request.user).order_by('-order_date')
+    
     return render(request, 'users/profile.html', {
         'form': profile_form,
         'password_change_form': form,
+        'orders': orders,
         'active_tab': 'settings'  # Changed from 'password' to 'settings'
     })

@@ -65,14 +65,16 @@
             <div class="product-actions d-flex justify-content-center gap-3 mb-4">
                 <div class="quantity-control">
                     <button class="quantity-btn btn" id="decrease-quantity">-</button>
-                    <input type="text" class="quantity-input" id="quantity" value="1" min="1" readonly>
+                    <input type="number" class="quantity-input" id="quantity" value="1" min="1" readonly>
                     <button class="quantity-btn btn" id="increase-quantity">+</button>
                 </div>
                 <button class="add-to-cart-btn btn btn-success me-2" id="add-to-cart-btn" data-service-id="{{ service.id }}">
                     <i class="fas fa-shopping-cart me-2"></i>Додати в кошик
                 </button>
-                <button class="btn btn-outline-secondary favorite-btn" data-service-id="{{ service.id }}">
-                    <i class="{% if service in user.favorite_services.all %}fas{% else %}far{% endif %} fa-heart"></i>
+            </div>
+            <div class="product-actions d-flex justify-content-center gap-3 mb-4">
+                <button class="btn btn-outline-secondary favorite-btn me-2" data-service-id="{{ service.id }}">
+                    <i class="{% if service in user.favorite_services.all %}fas{% else %}far{% endif %} fa-heart me-2"></i>
                     <span>{% if service in user.favorite_services.all %}В списку бажань{% else %}Додати до списку бажань{% endif %}</span>
                 </button>
             </div>
@@ -106,89 +108,6 @@
             </div>
         </div>
     </div>
-
-<!-- JavaScript for Add to Cart functionality -->
-<script>
-// Get the add to cart button
-const addToCartBtn = document.getElementById('add-to-cart-btn');
-
-// Get the quantity input
-const quantityInput = document.getElementById('quantity');
-let quantity = 1;
-
-if (quantityInput) {
-    quantity = parseInt(quantityInput.value);
-    quantityInput.addEventListener('change', function() {
-        quantity = parseInt(this.value);
-    });
-}
-
-// Add event listener for add to cart button
-if (addToCartBtn) {
-    addToCartBtn.addEventListener('click', function() {
-        const serviceId = this.getAttribute('data-service-id');
-        
-        // Call the addToCart function from cart.js
-        addToCart(serviceId, quantity);
-    });
-}
-
-// Review form functionality
-const showReviewFormBtn = document.getElementById('show-review-form-btn');
-const reviewFormContainer = document.getElementById('review-form-container');
-const cancelReviewBtn = document.getElementById('cancel-review-btn');
-const reviewForm = document.getElementById('review-form');
-
-// Show review form when button is clicked
-if (showReviewFormBtn && reviewFormContainer) {
-    showReviewFormBtn.addEventListener('click', function() {
-        reviewFormContainer.style.display = 'block';
-        showReviewFormBtn.style.display = 'none';
-    });
-}
-
-// Hide review form when cancel button is clicked
-if (cancelReviewBtn && reviewFormContainer && showReviewFormBtn) {
-    cancelReviewBtn.addEventListener('click', function() {
-        reviewFormContainer.style.display = 'none';
-        showReviewFormBtn.style.display = 'inline-block';
-    });
-}
-
-// Handle review form submission
-if (reviewForm) {
-    reviewForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const serviceId = this.getAttribute('data-service-id');
-        
-        fetch(`/services/${serviceId}/`, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Reload the page to show the new review
-                window.location.reload();
-            } else {
-                // Show error messages
-                console.error('Error submitting review:', data.errors);
-                alert('Помилка при додаванні відгуку. Будь ласка, перевірте введені дані.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Сталася помилка при відправці відгуку. Спробуйте ще раз пізніше.');
-        });
-    });
-}
-</script>
 </div>
 
     <!-- Детальна інформація з табами -->
@@ -375,89 +294,6 @@ if (reviewForm) {
         </div>
     </div>
 
-<!-- JavaScript for Add to Cart functionality -->
-<script>
-// Get the add to cart button
-const addToCartBtn = document.getElementById('add-to-cart-btn');
-
-// Get the quantity input
-const quantityInput = document.getElementById('quantity');
-let quantity = 1;
-
-if (quantityInput) {
-    quantity = parseInt(quantityInput.value);
-    quantityInput.addEventListener('change', function() {
-        quantity = parseInt(this.value);
-    });
-}
-
-// Add event listener for add to cart button
-if (addToCartBtn) {
-    addToCartBtn.addEventListener('click', function() {
-        const serviceId = this.getAttribute('data-service-id');
-        
-        // Call the addToCart function from cart.js
-        addToCart(serviceId, quantity);
-    });
-}
-
-// Review form functionality
-const showReviewFormBtn = document.getElementById('show-review-form-btn');
-const reviewFormContainer = document.getElementById('review-form-container');
-const cancelReviewBtn = document.getElementById('cancel-review-btn');
-const reviewForm = document.getElementById('review-form');
-
-// Show review form when button is clicked
-if (showReviewFormBtn && reviewFormContainer) {
-    showReviewFormBtn.addEventListener('click', function() {
-        reviewFormContainer.style.display = 'block';
-        showReviewFormBtn.style.display = 'none';
-    });
-}
-
-// Hide review form when cancel button is clicked
-if (cancelReviewBtn && reviewFormContainer && showReviewFormBtn) {
-    cancelReviewBtn.addEventListener('click', function() {
-        reviewFormContainer.style.display = 'none';
-        showReviewFormBtn.style.display = 'inline-block';
-    });
-}
-
-// Handle review form submission
-if (reviewForm) {
-    reviewForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const serviceId = this.getAttribute('data-service-id');
-        
-        fetch(`/services/${serviceId}/`, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Reload the page to show the new review
-                window.location.reload();
-            } else {
-                // Show error messages
-                console.error('Error submitting review:', data.errors);
-                alert('Помилка при додаванні відгуку. Будь ласка, перевірте введені дані.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Сталася помилка при відправці відгуку. Спробуйте ще раз пізніше.');
-        });
-    });
-}
-</script>
-
     <!-- Галерея додаткових фотографій -->
     <div class="row mt-5">
         <div class="col-12 mb-4">
@@ -488,89 +324,6 @@ if (reviewForm) {
             </div>
         </div>
     </div>
-
-<!-- JavaScript for Add to Cart functionality -->
-<script>
-// Get the add to cart button
-const addToCartBtn = document.getElementById('add-to-cart-btn');
-
-// Get the quantity input
-const quantityInput = document.getElementById('quantity');
-let quantity = 1;
-
-if (quantityInput) {
-    quantity = parseInt(quantityInput.value);
-    quantityInput.addEventListener('change', function() {
-        quantity = parseInt(this.value);
-    });
-}
-
-// Add event listener for add to cart button
-if (addToCartBtn) {
-    addToCartBtn.addEventListener('click', function() {
-        const serviceId = this.getAttribute('data-service-id');
-        
-        // Call the addToCart function from cart.js
-        addToCart(serviceId, quantity);
-    });
-}
-
-// Review form functionality
-const showReviewFormBtn = document.getElementById('show-review-form-btn');
-const reviewFormContainer = document.getElementById('review-form-container');
-const cancelReviewBtn = document.getElementById('cancel-review-btn');
-const reviewForm = document.getElementById('review-form');
-
-// Show review form when button is clicked
-if (showReviewFormBtn && reviewFormContainer) {
-    showReviewFormBtn.addEventListener('click', function() {
-        reviewFormContainer.style.display = 'block';
-        showReviewFormBtn.style.display = 'none';
-    });
-}
-
-// Hide review form when cancel button is clicked
-if (cancelReviewBtn && reviewFormContainer && showReviewFormBtn) {
-    cancelReviewBtn.addEventListener('click', function() {
-        reviewFormContainer.style.display = 'none';
-        showReviewFormBtn.style.display = 'inline-block';
-    });
-}
-
-// Handle review form submission
-if (reviewForm) {
-    reviewForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const serviceId = this.getAttribute('data-service-id');
-        
-        fetch(`/services/${serviceId}/`, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Reload the page to show the new review
-                window.location.reload();
-            } else {
-                // Show error messages
-                console.error('Error submitting review:', data.errors);
-                alert('Помилка при додаванні відгуку. Будь ласка, перевірте введені дані.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Сталася помилка при відправці відгуку. Спробуйте ще раз пізніше.');
-        });
-    });
-}
-</script>
     
     <!-- Пов'язані послуги -->
     <div class="row mt-5">

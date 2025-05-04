@@ -318,6 +318,7 @@
     background-color: #337c37;
     border-color: #337c37;
     color: white;
+    --bs-btn-active-bg: #126022;
 }
 
 .add-to-cart-icon:hover {
@@ -327,6 +328,16 @@
     color: #337c37;
     font-weight: 600;
     font-size: 1.1rem;
+}
+
+.favorite-btn-ico {
+    padding: 10px 12px !important;
+    transition: none !important;
+    --bs-btn-active-bg: #126022;
+}
+
+.favorite-btn-ico:hover {
+    transform: none !important;
 }
 
 .description {

@@ -49,8 +49,10 @@ class CustomUser(AbstractUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=15, blank=True)
+    phone_number = models.CharField(max_length=25, blank=True)
     address = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    zip_code = models.CharField(max_length=20, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics', default='profile_pics/default.jpg', blank=True)
 
     def __str__(self):

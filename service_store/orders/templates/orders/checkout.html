@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block content %}
-<!-- Додаємо стилі для сторінки кошика, оскільки вони підходять і для оформлення замовлення -->
-<link href="{% static 'css/components/cart.css' %}" rel="stylesheet">
+<!-- Додаємо стилі для сторінки оформлення замовлення -->
+<link href="{% static 'css/components/checkout.css' %}" rel="stylesheet">
 
 <!-- Заголовок сторінки з хлібними крихтами -->
 <div class="page-header" style="background: url('{% static "images/shop-header.jpg" %}') no-repeat center center; background-size: cover;">
@@ -27,92 +27,119 @@
         <div class="col-lg-8">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h3 class="card-title mb-4">Інформація для доставки</h3>
+                    <h3 class="card-title mb-4">Контактні дані</h3>
                     <form method="post" action="{% url 'checkout' %}">
                         {% csrf_token %}
                         <div class="row mb-3">
                             <div class="col-md-6 mb-3">
                                 <label for="firstName" class="form-label">Ім'я</label>
-                                <input type="text" class="form-control" id="firstName" name="first_name" required>
+                                <input type="text" class="form-control {% if 'first_name' in form_errors %}is-invalid{% endif %}" id="firstName" name="first_name" value="{{ request.user.first_name }}" required>
+                                {% if 'first_name' in form_errors %}
+                                <div class="invalid-feedback">{{ form_errors.first_name }}</div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="lastName" class="form-label">Прізвище</label>
-                                <input type="text" class="form-control" id="lastName" name="last_name" required>
+                                <input type="text" class="form-control {% if 'last_name' in form_errors %}is-invalid{% endif %}" id="lastName" name="last_name" value="{{ request.user.last_name }}" required>
+                                {% if 'last_name' in form_errors %}
+                                <div class="invalid-feedback">{{ form_errors.last_name }}</div>
+                                {% endif %}
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Телефон</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control {% if 'email' in form_errors %}is-invalid{% endif %}" id="email" name="email" value="{{ request.user.email }}" required>
+                                {% if 'email' in form_errors %}
+                                <div class="invalid-feedback">{{ form_errors.email }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Телефон</label>
+                                <input type="tel" class="form-control {% if 'phone' in form_errors %}is-invalid{% endif %}" id="phone" name="phone" value="{% if request.POST.phone %}{{ request.POST.phone }}{% else %}{{ user_phone }}{% endif %}" required>
+                                {% if 'phone' in form_errors %}
+                                <div class="invalid-feedback">{{ form_errors.phone }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="address" class="form-label">Адреса</label>
-                            <input type="text" class="form-control" id="address" name="address" required>
+                            <input type="text" class="form-control {% if 'address' in form_errors %}is-invalid{% endif %}" id="address" name="address" value="{% if request.POST.address %}{{ request.POST.address }}{% else %}{{ user_address }}{% endif %}" required>
+                            {% if 'address' in form_errors %}
+                            <div class="invalid-feedback">{{ form_errors.address }}</div>
+                            {% endif %}
                         </div>
                         
                         <div class="row mb-3">
                             <div class="col-md-6 mb-3">
                                 <label for="city" class="form-label">Місто</label>
-                                <input type="text" class="form-control" id="city" name="city" required>
+                                <input type="text" class="form-control {% if 'city' in form_errors %}is-invalid{% endif %}" id="city" name="city" value="{% if request.POST.city %}{{ request.POST.city }}{% else %}{{ user_city }}{% endif %}" required>
+                                {% if 'city' in form_errors %}
+                                <div class="invalid-feedback">{{ form_errors.city }}</div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="zip" class="form-label">Поштовий індекс</label>
-                                <input type="text" class="form-control" id="zip" name="zip" required>
+                                <label for="zip" class="form-label">Поштовий індекс / Відділення пошти</label>
+                                <input type="text" class="form-control {% if 'zip' in form_errors %}is-invalid{% endif %}" id="zip" name="zip" value="{% if request.POST.zip %}{{ request.POST.zip }}{% else %}{{ user_zip }}{% endif %}" required>
+                                {% if 'zip' in form_errors %}
+                                <div class="invalid-feedback">{{ form_errors.zip }}</div>
+                                {% endif %}
                             </div>
                         </div>
-                        
-                        <h3 class="card-title mb-4 mt-5">Спосіб оплати</h3>
-                        <div class="mb-3">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="payment_method" id="creditCard" value="credit_card" checked>
-                                <label class="form-check-label" for="creditCard">
-                                    Кредитна картка
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
-                                <label class="form-check-label" for="paypal">
-                                    PayPal
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment_method" id="cashOnDelivery" value="cash_on_delivery">
-                                <label class="form-check-label" for="cashOnDelivery">
-                                    Оплата при отриманні
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div id="creditCardDetails" class="mb-4">
-                            <div class="mb-3">
-                                <label for="cardName" class="form-label">Ім'я на картці</label>
-                                <input type="text" class="form-control" id="cardName" name="card_name">
-                            </div>
-                            <div class="mb-3">
-                                <label for="cardNumber" class="form-label">Номер картки</label>
-                                <input type="text" class="form-control" id="cardNumber" name="card_number">
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="expiration" class="form-label">Термін дії</label>
-                                    <input type="text" class="form-control" id="expiration" name="expiration" placeholder="MM/YY">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="cvv" class="form-label">CVV</label>
-                                    <input type="text" class="form-control" id="cvv" name="cvv">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3 form-check">
+
+                        <div class="mb-3 form-check text-start">
                             <input type="checkbox" class="form-check-input" id="saveInfo" name="save_info">
                             <label class="form-check-label" for="saveInfo">Зберегти цю інформацію для наступних замовлень</label>
+                        </div>
+                        
+                        <h4 class="card-title mb-4 mt-5 text-start">Спосіб доставки</h3>
+                        <div class="mb-3 {% if 'delivery_method' in form_errors %}is-invalid{% endif %}">
+                            <div class="form-check mb-2 text-start">
+                                <input class="form-check-input" type="radio" name="delivery_method" id="novaPoshta" value="nova_poshta" {% if request.POST.delivery_method == 'nova_poshta' %}checked{% endif %}>
+                                <label class="form-check-label" for="novaPoshta">
+                                    Нова Пошта
+                                </label>
+                            </div>
+                            <div class="form-check mb-2 text-start">
+                                <input class="form-check-input" type="radio" name="delivery_method" id="ukrPoshta" value="ukr_poshta" {% if request.POST.delivery_method == 'ukr_poshta' %}checked{% endif %}>
+                                <label class="form-check-label" for="ukrPoshta">
+                                    Укрпошта
+                                </label>
+                            </div>
+                            <div class="form-check text-start">
+                                <input class="form-check-input" type="radio" name="delivery_method" id="courier" value="courier" {% if request.POST.delivery_method == 'courier' %}checked{% endif %}>
+                                <label class="form-check-label" for="courier">
+                                    Кур'єрська доставка
+                                </label>
+                            </div>
+                            {% if 'delivery_method' in form_errors %}
+                            <div class="invalid-feedback d-block mt-2">
+                                {{ form_errors.delivery_method }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h4 class="card-title mb-4 mt-5 text-start">Спосіб оплати</h3>
+                        <div class="mb-3 {% if 'payment_method' in form_errors %}is-invalid{% endif %}">
+                            <div class="form-check mb-2 text-start">
+                                <input class="form-check-input" type="radio" name="payment_method" id="googlepay" value="googlepay" {% if request.POST.payment_method == 'googlepay' %}checked{% endif %}>
+                                <label class="form-check-label" for="googlepay">
+                                    Google Pay
+                                </label>
+                            </div>
+                            <div class="form-check text-start">
+                                <input class="form-check-input" type="radio" name="payment_method" id="cashOnDelivery" value="cash_on_delivery" {% if request.POST.payment_method == 'cash_on_delivery' %}checked{% endif %}>
+                                <label class="form-check-label" for="cashOnDelivery">
+                                    Оплата під час отримання
+                                </label>
+                            </div>
+                            {% if 'payment_method' in form_errors %}
+                            <div class="invalid-feedback d-block mt-2">
+                                {{ form_errors.payment_method }}
+                            </div>
+                            {% endif %}
                         </div>
                         
                         <button type="submit" class="checkout-btn">Підтвердити замовлення</button>

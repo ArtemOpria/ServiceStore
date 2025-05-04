@@ -92,13 +92,16 @@ class ProfileForm(forms.ModelForm):
     
     class Meta:
         model = Profile
-        fields = ['phone_number', 'address', 'profile_picture']
+        fields = ['phone_number', 'address', 'city', 'zip_code', 'profile_picture']
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.user_id:
             self.fields['first_name'].initial = self.instance.user.first_name
             self.fields['last_name'].initial = self.instance.user.last_name
+            
+        # Додаємо атрибут type="tel" для поля телефону
+        self.fields['phone_number'].widget.attrs.update({'type': 'tel'})
     
     def save(self, commit=True):
         profile = super().save(commit=False)

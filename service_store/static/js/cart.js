@@ -137,11 +137,61 @@ function showCartNotification(message) {
         document.body.appendChild(notification);
     }
     
-    // Set message and show notification
-    notification.textContent = message;
+    // Очищаємо вміст повідомлення
+    notification.innerHTML = '';
+    
+    // Створюємо контейнер для тексту
+    const messageText = document.createElement('div');
+    messageText.className = 'notification-message';
+    messageText.textContent = message;
+    notification.appendChild(messageText);
+    
+    // Додаємо кнопку переходу до кошика, якщо повідомлення про додавання товару
+    if (message.includes('Товар додано до кошика')) {
+        const goToCartButton = document.createElement('a');
+        goToCartButton.href = '/orders/cart/';
+        goToCartButton.className = 'go-to-cart-button';
+        goToCartButton.innerHTML = '<i class="fas fa-shopping-cart"></i> Перейти до кошика';
+        notification.appendChild(goToCartButton);
+        
+        // Додаємо стилі для кнопки, якщо вони ще не додані
+        if (!document.getElementById('cart-notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'cart-notification-styles';
+            style.textContent = `
+                .cart-notification {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 15px;
+                }
+                .go-to-cart-button {
+                    display: inline-flex;
+                    align-items: center;
+                    background-color:rgb(37, 94, 12);
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    text-decoration: none;
+                    font-size: 14px;
+                    margin-top: 5px;
+                    transition: background-color 0.3s;
+                }
+                .go-to-cart-button:hover {
+                    background-color:rgb(50, 90, 64);
+                }
+                .go-to-cart-button i {
+                    margin-right: 5px;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
     notification.classList.add('show');
     
-    // Hide notification after 3 seconds and then remove it from DOM
+    // Hide notification after 4 seconds and then remove it from DOM
     setTimeout(() => {
         notification.classList.remove('show');
         
@@ -150,8 +200,8 @@ function showCartNotification(message) {
             if (notification && notification.parentNode) {
                 notification.parentNode.removeChild(notification);
             }
-        }, 300); // Match the transition duration from CSS (0.3s)
-    }, 3000);
+        }, 300);
+    }, 4000);
 }
 
 // Update cart icon with number of items
@@ -255,6 +305,16 @@ function removeItem(serviceId) {
     showCartNotification('Товар видалено з кошика');
 }
 
+// Clear cart completely (used after checkout or when user manually clears cart)
+function clearCart() {
+    sessionStorage.setItem('cart', JSON.stringify({}));
+    updateServerCart({});
+    updateCartIcon(0);
+    const isCartPage = window.location.pathname.includes('/orders/cart/');
+    const message = isCartPage ? 'Кошик успішно очищено!' : 'Замовлення оформлено успішно!';
+    showCartNotification(message);
+}
+
 // Initialize cart when page loads and update cart icon
 document.addEventListener('DOMContentLoaded', function() {
     initCart();
@@ -262,6 +322,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get current cart and calculate unique items (number of keys in cart object)
     const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
     const uniqueItemsCount = Object.keys(cart).length;
+    
+    // Перевіряємо, чи ми на сторінці профілю і чи є cookie для активації вкладки замовлень
+    if (window.location.pathname.includes('/users/profile/')) {
+        const activeTab = getCookie('active_tab');
+        if (activeTab === 'orders') {
+            // Активуємо вкладку замовлень
+            setTimeout(() => {
+                const ordersTab = document.getElementById('orders-tab');
+                if (ordersTab) {
+                    ordersTab.click();
+                }
+                // Видаляємо cookie після використання
+                document.cookie = 'active_tab=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            }, 100);
+            
+            // Очищаємо кошик, якщо ми перейшли на профіль після оформлення замовлення
+            clearCart();
+        }
+    }
     
     // Check if we need to sync with server cart (for authenticated users)
     // or clear cart (for users who just logged out)

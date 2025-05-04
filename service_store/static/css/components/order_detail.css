@@ -1,0 +1,186 @@
+/* Order Detail Page Styles */
+
+/* Імпортуємо базові стилі з profile.css */
+@import url('profile.css');
+
+/* Специфічні стилі для сторінки замовлення */
+.profile-avatar {
+    background-color: #4caf50; /* Змінюємо колір аватара для замовлень на зелений */
+}
+
+.profile-header {
+    background-color: #337c37; /* Змінюємо колір заголовка для замовлень на основний зелений */
+}
+
+.profile-card h2 {
+    color: #337c37; /* Змінюємо колір заголовків для замовлень */
+    border-bottom: 2px solid #e8f5e9;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+}
+
+/* Стилі для карток з інформацією */
+.order-info-card {
+    border-radius: 10px;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.order-info-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.order-info-card .card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: #2e6e2a !important;
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.order-info-card .card-body {
+    padding: 0;
+}
+
+.info-table {
+    margin-bottom: 0;
+}
+
+.info-table td {
+    padding: 12px 20px;
+    vertical-align: middle;
+}
+
+.info-table tr:not(:last-child) td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.info-table .text-muted {
+    width: 40%;
+    font-weight: 500;
+}
+
+.info-table .fw-bold {
+    font-weight: 600 !important;
+}
+
+.badge {
+    position: static !important;
+}
+
+/* Стилі для статусів замовлення */
+.badge.status-pending {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.badge.status-in_progress {
+    background-color: #17a2b8;
+    color: #fff;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.badge.status-completed {
+    background-color: #28a745;
+    color: #fff;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.badge.status-cancelled {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Стилі для таблиці послуг */
+.table {
+    border-radius: 0;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+/* Стилі для кнопок дій */
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn-primary {
+    background-color: #4caf50;
+    border-color: #4caf50;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #43a047;
+    border-color: #388e3c;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+
+
+.table thead th {
+    background-color: #f8f9fa;
+    color: #333;
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid #e8f5e9;
+}
+
+.table tfoot th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 1rem;
+    border-top: 2px solid #dee2e6;
+}
+
+.btn-secondary, .btn-primary {
+    background-color: #126022;
+    --bs-btn-active-bg: #126022;
+    border: 0;
+}
+
+.btn-secondary:hover, .btn-primary:hover {
+    background-color: #10571f;
+    border: 0;
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 768px) {
+    .table thead th,
+    .table tbody td,
+    .table tfoot th {
+        padding: 0.75rem;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
