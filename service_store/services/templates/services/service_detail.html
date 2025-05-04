@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/components/review.css' %}">
+{% endblock %}
+
 {% block hero %}
 <div class="page-header">
     <div class="page-header-overlay">
@@ -48,12 +52,23 @@
                     
                     <!-- Рейтинг -->
                     <div class="product-rating mb-3">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <span class="rating-count">(4.0 / 5)</span>
+                        {% if reviews_count > 0 %}
+                            {% for star in star_list %}
+                                {% if star == "full" %}
+                                    <i class="fas fa-star"></i>
+                                {% elif star == "half" %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="rating-count">({{ avg_rating|floatformat:1 }} / 5)</span>
+                        {% else %}
+                            {% for i in "12345"|make_list %}
+                                <i class="far fa-star"></i>
+                            {% endfor %}
+                            <span class="rating-count text-muted">(Немає відгуків)</span>
+                        {% endif %}
                     </div>
                     
                     <!-- Короткий опис -->
@@ -210,42 +225,42 @@
                         <!-- Таб з відгуками -->
                         <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                             <div class="reviews-section">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h3 class="mb-0">Відгуки клієнтів ({{ reviews_count }})</h3>
+                                <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded shadow-sm border">
+                                    <h3 class="mb-0"><i class="fas fa-comments me-2 text-primary"></i>Відгуки клієнтів <span class="badge rounded-pill" style="background-color: #337c37; position: static;">{{ reviews_count }}</span></h3>
                                     {% if user.is_authenticated and not user_review %}
-                                    <button class="btn btn-outline-success" id="show-review-form-btn">Залишити відгук</button>
+                                    <button class="btn btn-outline-success" id="show-review-form-btn"><i class="fas fa-pen me-2"></i>Залишити відгук</button>
                                     {% endif %}
                                 </div>
                                 
-                                <!-- Форма для додавання відгуку -->
+                                <!-- Форма для додавання/редагування відгуку -->
                                 {% if user.is_authenticated and review_form %}
-                                <div class="review-form-container mb-4 p-3 border rounded" id="review-form-container" style="display: none;">
-                                    <h4 class="mb-3">Залишити відгук</h4>
+                                <div class="review-form-container mb-4 p-4 border rounded shadow-sm bg-white" id="review-form-container" style="display: none;">
+                                    <h4 class="mb-3 fw-bold" id="review-form-title"><i class="fas fa-pen-fancy me-2 text-primary"></i>Залишити відгук</h4>
                                     <form id="review-form" method="post" data-service-id="{{ service.id }}">
                                         {% csrf_token %}
+                                        <div class="mb-3 bg-light p-3 rounded">
+                                            <label for="id_rating" class="form-label fw-bold">{{ review_form.rating.label }}</label>
+                                            <div id="star-rating" class="star-rating fs-4">
+                                                {% for i in "12345"|make_list %}
+                                                    <i class="far fa-star text-warning" data-value="{{ forloop.counter }}"></i>
+                                                {% endfor %}
+                                                <input type="hidden" name="rating" id="id_rating" value="5">
+                                            </div>
+                                        </div>                                        
                                         <div class="mb-3">
-                                            <label for="id_rating" class="form-label">{{ review_form.rating.label }}</label>
-                                            <select name="rating" id="id_rating" class="form-select">
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5" selected>5</option>
-                                            </select>
+                                            <label for="id_comment" class="form-label fw-bold">{{ review_form.comment.label }}</label>
+                                            <textarea name="comment" id="id_comment" class="form-control border" rows="4" placeholder="Напишіть ваш відгук тут..."></textarea>
                                         </div>
-                                        <div class="mb-3">
-                                            <label for="id_comment" class="form-label">{{ review_form.comment.label }}</label>
-                                            <textarea name="comment" id="id_comment" class="form-control" rows="4" placeholder="Напишіть ваш відгук тут..."></textarea>
-                                        </div>
-                                        <div class="d-flex justify-content-end">
-                                            <button type="button" class="btn btn-outline-secondary me-2" id="cancel-review-btn">Скасувати</button>
-                                            <button type="submit" class="btn btn-success">Опублікувати</button>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button type="button" class="btn btn-outline-secondary" id="cancel-review-btn"><i class="fas fa-times me-2"></i>Скасувати</button>
+                                            <button type="submit" class="btn btn-success"><i class="fas fa-paper-plane me-2"></i>Опублікувати</button>
                                         </div>
                                     </form>
                                 </div>
                                 {% elif not user.is_authenticated %}
-                                <div class="alert alert-info mb-4">
-                                    <p class="mb-0">Щоб залишити відгук, будь ласка, <a href="{% url 'login' %}">увійдіть в акаунт</a>.</p>
+                                <div class="alert alert-info mb-4 p-4 rounded shadow-sm border text-center">
+                                    <i class="fas fa-user-lock fa-2x mb-3 text-info"></i>
+                                    <p class="mb-0 fs-5">Щоб залишити відгук, будь ласка, <a href="{% url 'login' %}" class="fw-bold">увійдіть в акаунт</a>.</p>
                                 </div>
                                 {% endif %}
                                 
@@ -253,36 +268,40 @@
                                 <div class="reviews-list">
                                     {% if reviews %}
                                         {% for review in reviews %}
-                                        <div class="review-item mb-4 p-3 border-bottom">
-                                            <div class="d-flex justify-content-between mb-2">
+                                        <div class="review-item mb-4 p-4 rounded shadow-sm bg-white border">
+                                            <div class="d-flex justify-content-between mb-3">
                                                 <div class="d-flex align-items-center">
-                                                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ review.user.username }}" class="rounded-circle me-2" width="50" height="50">
+                                                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ review.user.username }}" class="rounded-circle me-3" width="60" height="60" style="border: 2px solid #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                                                     <div>
-                                                        <h5 class="mb-0">{{ review.user.get_full_name|default:review.user.username }}</h5>
-                                                        <div class="text-muted small">{{ review.created_at|date:"d F Y" }}</div>
+                                                        <h5 class="mb-0 fw-bold">{{ review.user.get_full_name|default:review.user.username }}</h5>
+                                                        <div class="text-muted small">{{ review.created_at|date:"d F Y H:i" }}</div>
                                                     </div>
                                                 </div>
-                                                <div class="product-rating">
+                                                <div class="product-rating bg-light py-1 px-2 rounded-pill">
                                                     {% for i in "12345"|make_list %}
                                                         {% if forloop.counter <= review.rating %}
-                                                            <i class="fas fa-star"></i>
+                                                            <i class="fas fa-star text-warning"></i>
                                                         {% else %}
-                                                            <i class="far fa-star"></i>
+                                                            <i class="far fa-star text-muted"></i>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </div>
                                             </div>
-                                            <p>{{ review.comment }}</p>
+                                            <div class="review-content p-3 bg-light rounded mb-3">
+                                                <p class="text-start mb-0">{{ review.comment }}</p>
+                                            </div>
                                             {% if review.user == user %}
-                                            <div class="d-flex justify-content-end">
-                                                <button class="btn btn-sm btn-outline-secondary edit-review-btn" data-review-id="{{ review.id }}">Редагувати</button>
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <button class="btn btn-sm btn-outline-secondary edit-review-btn" data-review-id="{{ review.id }}" data-rating="{{ review.rating }}" data-comment="{{ review.comment }}">Редагувати</button>
+                                                <button class="btn btn-sm btn-outline-danger delete-review-btn" data-review-id="{{ review.id }}" data-service-id="{{ service.id }}">Видалити</button>
                                             </div>
                                             {% endif %}
                                         </div>
                                         {% endfor %}
                                     {% else %}
-                                        <div class="alert alert-light">
-                                            <p class="mb-0">Поки що немає відгуків для цієї послуги. Будьте першим, хто залишить відгук!</p>
+                                        <div class="alert alert-light rounded shadow-sm p-4 text-center border">
+                                            <i class="far fa-comment-dots fa-3x mb-3 text-muted"></i>
+                                            <p class="mb-0 fs-5">Поки що немає відгуків для цієї послуги. Будьте першим, хто залишить відгук!</p>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -427,134 +446,8 @@
             </div>
         </div>
     </div>
+{% endblock %}
 
-<!-- JavaScript for Add to Cart functionality -->
-<script>
-// Get the add to cart button
-const addToCartBtn = document.getElementById('add-to-cart-btn');
-
-// Get the quantity input
-const quantityInput = document.getElementById('quantity');
-let quantity = 1;
-
-if (quantityInput) {
-    quantity = parseInt(quantityInput.value);
-    quantityInput.addEventListener('change', function() {
-        quantity = parseInt(this.value);
-    });
-}
-
-// Add event listener for add to cart button
-if (addToCartBtn) {
-    addToCartBtn.addEventListener('click', function() {
-        const serviceId = this.getAttribute('data-service-id');
-        
-        // Call the addToCart function from cart.js
-        addToCart(serviceId, quantity);
-    });
-}
-
-// Review form functionality
-const showReviewFormBtn = document.getElementById('show-review-form-btn');
-const reviewFormContainer = document.getElementById('review-form-container');
-const cancelReviewBtn = document.getElementById('cancel-review-btn');
-const reviewForm = document.getElementById('review-form');
-
-// Show review form when button is clicked
-if (showReviewFormBtn && reviewFormContainer) {
-    showReviewFormBtn.addEventListener('click', function() {
-        reviewFormContainer.style.display = 'block';
-        showReviewFormBtn.style.display = 'none';
-    });
-}
-
-// Hide review form when cancel button is clicked
-if (cancelReviewBtn && reviewFormContainer && showReviewFormBtn) {
-    cancelReviewBtn.addEventListener('click', function() {
-        reviewFormContainer.style.display = 'none';
-        showReviewFormBtn.style.display = 'inline-block';
-    });
-}
-
-// Handle review form submission
-if (reviewForm) {
-    reviewForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const serviceId = this.getAttribute('data-service-id');
-        
-        fetch(`/services/${serviceId}/`, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Reload the page to show the new review
-                window.location.reload();
-            } else {
-                // Show error messages
-                console.error('Error submitting review:', data.errors);
-                alert('Помилка при додаванні відгуку. Будь ласка, перевірте введені дані.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Сталася помилка при відправці відгуку. Спробуйте ще раз пізніше.');
-        });
-    });
-}
-</script>
-</div>
-
-<script>
-    // Функціонал для галереї зображень
-    document.addEventListener('DOMContentLoaded', function() {
-        const thumbnails = document.querySelectorAll('.gallery-thumbnail');
-        const mainImage = document.getElementById('main-product-image');
-        
-        thumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', function() {
-                // Оновлення основного зображення
-                mainImage.src = this.getAttribute('data-src');
-                
-                // Оновлення активного стану мініатюр
-                thumbnails.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-        
-        // Функціонал для кількості товару
-        const decreaseBtn = document.getElementById('decrease-quantity');
-        const increaseBtn = document.getElementById('increase-quantity');
-        const quantityInput = document.getElementById('quantity');
-        
-        // Забороняємо введення тексту в поле кількості
-        quantityInput.addEventListener('keydown', function(e) {
-            e.preventDefault();
-            return false;
-        });
-        
-        decreaseBtn.addEventListener('click', function() {
-            const currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        });
-        
-        increaseBtn.addEventListener('click', function() {
-            const currentValue = parseInt(quantityInput.value);
-            quantityInput.value = currentValue + 1;
-        });
-        
-        // Ініціалізація табів Bootstrap
-        const tabEl = document.querySelector('button[data-bs-toggle="tab"]');
-        tabEl && new bootstrap.Tab(tabEl);
-    });
-</script>
+{% block extra_js %}
+<script src="{% static 'js/service_detail.js' %}"></script>
 {% endblock %}

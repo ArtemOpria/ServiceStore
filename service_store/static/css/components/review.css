@@ -1,0 +1,41 @@
+.reviews-list .review-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid #6c757d;
+}
+
+.reviews-list .review-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.reviews-list .review-item p {
+    text-align: left;
+}
+
+.review-content {
+    border-left: 3px solid #5a4a42;
+}
+
+.review-form-container {
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.star-rating i {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.edit-review-btn, .delete-review-btn {
+    transition: all 0.3s ease;
+}
+
+.edit-review-btn:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+.delete-review-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}

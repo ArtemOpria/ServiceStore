@@ -85,6 +85,9 @@
 .product-rating {
     margin-bottom: 15px;
     color: #ffc107;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .product-rating .far {
@@ -352,6 +355,12 @@
 .service-card .btn-outline-success:hover {
     background-color: #337c37;
     color: white;
+}
+
+.star-rating i {
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: color 0.2s;
 }
 
 /* Адаптивність для мобільних пристроїв */

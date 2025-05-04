@@ -1,10 +1,10 @@
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.urls import reverse
-
 from .models import Service, Category, Review
 from utils.decorators import login_required_with_message
 
@@ -123,27 +123,68 @@ def service_detail(request, service_id):
             review_form = ReviewForm()
     
     if request.method == 'POST' and request.user.is_authenticated:
-        from .forms import ReviewForm
-        if user_review:
-            review_form = ReviewForm(request.POST, instance=user_review)
-        else:
-            review_form = ReviewForm(request.POST)
+        data = json.loads(request.body)
+        action = data.get('action')
+        
+        if action == 'add_review':
+            from .forms import ReviewForm
+            from django.http import QueryDict
             
-        if review_form.is_valid():
-            review = review_form.save(commit=False)
-            review.user = request.user
-            review.service = service
+            # Створюємо QueryDict для правильної валідації форми
+            post_data = QueryDict('', mutable=True)
+            post_data.update({
+                'rating': data.get('rating'),
+                'comment': data.get('comment')
+            })
+            
+            review_form = ReviewForm(post_data)
+            if review_form.is_valid():
+                review = Review()
+                review.user = request.user
+                review.service = service
+                review.rating = data.get('rating')
+                review.comment = data.get('comment')
+                review.save()
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'error', 'errors': review_form.errors})
+                
+        elif action == 'edit_review':
+            review_id = data.get('review_id')
+            review = get_object_or_404(Review, id=review_id, user=request.user)
+            
+            review.rating = data.get('rating')
+            review.comment = data.get('comment')
             review.save()
             return JsonResponse({'status': 'success'})
-        else:
-            return JsonResponse({'status': 'error', 'errors': review_form.errors})
+            
+        elif action == 'delete_review':
+            review_id = data.get('review_id')
+            review = get_object_or_404(Review, id=review_id, user=request.user)
+            review.delete()
+            return JsonResponse({'status': 'success'})
     
+    # Розрахунок середнього рейтингу
+    avg_rating = 0
+    star_list = ['empty'] * 5
+
+    if reviews.exists():
+        total_rating = sum(review.rating for review in reviews)
+        avg_rating = total_rating / reviews.count()
+
+        full_stars = int(avg_rating)
+        half_star = (avg_rating - full_stars) >= 0.25 and (avg_rating - full_stars) < 0.75
+        empty_stars = 5 - full_stars - int(half_star)
+        star_list = ['full'] * full_stars + ['half'] * int(half_star) + ['empty'] * empty_stars
+
     context = {
         'service': service,
         'reviews': reviews,
         'review_form': review_form,
         'user_review': user_review,
-        'reviews_count': reviews.count()
+        'reviews_count': reviews.count(),
+        'avg_rating': avg_rating,
+        'star_list': star_list
     }
     
     return render(request, 'services/service_detail.html', context)

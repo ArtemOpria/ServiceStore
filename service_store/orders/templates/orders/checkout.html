@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block content %}
-<!-- Додаємо стилі для сторінки оформлення замовлення -->
 <link href="{% static 'css/components/checkout.css' %}" rel="stylesheet">
 
-<!-- Заголовок сторінки з хлібними крихтами -->
-<div class="page-header" style="background: url('{% static "images/shop-header.jpg" %}') no-repeat center center; background-size: cover;">
+{% block hero %}
+<div class="page-header">
     <div class="page-header-overlay">
         <div class="container">
             <h1>Оформлення замовлення</h1>
@@ -20,7 +17,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block content %}
 <div class="container my-5">
     <div class="row">
         <!-- Форма оформлення замовлення -->
@@ -151,7 +150,7 @@
         <!-- Блок з підсумками замовлення -->
         <div class="col-lg-4">
             <div class="cart-totals">
-                <h2>Ваше замовлення</h2>
+                <h2>Склад замовлення</h2>
                 
                 {% if cart_items %}
                     {% for item in cart_items %}
