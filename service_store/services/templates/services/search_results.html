@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load image_helpers %}
 
 {% block content %}
 <div class="container mt-4">
@@ -14,7 +15,7 @@
             {% for service in services %}
                 <div class="col">
                     <div class="card h-100 service-card">
-                        {% if service.image %}
+                        {% if service.image and service.image.url|file_exists %}
                             <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}">
                         {% else %}
                             <img src="{% static 'images/no-image.jpg' %}" class="card-img-top" alt="No Image">

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load image_helpers %}
 
 {% block hero %}
 <div class="page-header">
@@ -21,12 +22,12 @@
 <div class="container my-5">
     <div class="row">
         {% if cart_items %}
-        <!-- Таблиця з товарами в кошику -->
+        <!-- Таблиця з послугами в кошику -->
         <div class="col-lg-8">
             <table class="table cart-table">
                 <thead>
                     <tr>
-                        <th>Товар</th>
+                        <th>Послуга</th>
                         <th>Ціна</th>
                         <th>Кількість</th>
                         <th>Сума</th>
@@ -38,7 +39,7 @@
                     <tr data-item-id="{{ item.service.id }}">
                         <td>
                             <div class="d-flex align-items-center">
-                                <img src="{{ item.service.image.url }}" alt="{{ item.service.name }}" class="cart-product-img me-3">
+                                <img src="{% if item.service.image and item.service.image.url|file_exists %}{{ item.service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" alt="{{ item.service.name }}" class="cart-product-img me-3">
                                 <a href="{% url 'service_detail' item.service.id %}" class="cart-product-name">{{ item.service.name }}</a>
                             </div>
                         </td>
@@ -70,7 +71,7 @@
             <div class="empty-cart text-center py-5 my-4">
                 <i class="fas fa-shopping-cart fa-4x mb-4"></i>
                 <h3>Ваш кошик порожній</h3>
-                <p>Додайте товари до кошика, щоб продовжити</p>
+                <p>Додайте послуги до кошика, щоб продовжити</p>
                 <a href="{% url 'service_list' %}" class="btn btn-success mt-3">
                     <i class="fas fa-arrow-left me-2 arrow-catalog"></i> Перейти до каталогу
                 </a>
@@ -138,7 +139,7 @@
         // Ensure itemId is a string for consistency
         itemId = String(itemId);
         
-        // Оновлення кількості товару через функцію з cart.js
+        // Оновлення кількості послуги через функцію з cart.js
         const newQuantity = updateItemQuantity(itemId, action);
         
         // Оновлення відображення кількості на сторінці
@@ -147,7 +148,7 @@
             quantityInput.value = newQuantity;
         }
         
-        // Оновлення загальної суми для товару
+        // Оновлення загальної суми для послуг
         const priceElement = document.querySelector(`tr[data-item-id="${itemId}"] .cart-product-price`);
         const totalElement = document.querySelector(`tr[data-item-id="${itemId}"] .cart-product-total`);
         if (priceElement && totalElement) {
@@ -165,22 +166,18 @@
     }
     
     function removeFromCart(itemId) {
-        // Видалення товару з кошика через функцію з cart.js
         removeItem(itemId);
         
-        // Видалення рядка з таблиці
         const itemRow = document.querySelector(`tr[data-item-id="${itemId}"]`);
         if (itemRow) {
             itemRow.remove();
         }
         
-        // Оновлення загальної суми замовлення
         updateOrderTotals();
         
         // Перевірка, чи кошик порожній
         const cartTable = document.querySelector('.cart-table tbody');
         if (cartTable && cartTable.children.length === 0) {
-            // Показати повідомлення про порожній кошик
             const rowContainer = document.querySelector('.row');
             if (rowContainer) {
                 rowContainer.innerHTML = `
@@ -188,7 +185,7 @@
                         <div class="empty-cart text-center py-5 my-4">
                             <i class="fas fa-shopping-cart fa-4x mb-4"></i>
                             <h3>Ваш кошик порожній</h3>
-                            <p>Додайте товари до кошика, щоб продовжити</p>
+                            <p>Додайте послуги до кошика, щоб продовжити</p>
                             <a href="{% url 'service_list' %}" class="btn btn-success mt-3">
                                 <i class="fas fa-arrow-left me-2"></i> Перейти до каталогу
                             </a>
@@ -203,7 +200,6 @@
     function updateOrderTotals() {
         let subtotal = 0;
         
-        // Підрахунок загальної суми всіх товарів
         document.querySelectorAll('.cart-product-total').forEach(element => {
             // Ensure we're parsing a valid number by removing currency symbol and any whitespace
             const priceText = element.textContent.replace('₴', '').trim();
@@ -243,7 +239,7 @@
                         <div class="empty-cart text-center py-5 my-4">
                             <i class="fas fa-shopping-cart fa-4x mb-4"></i>
                             <h3>Ваш кошик порожній</h3>
-                            <p>Додайте товари до кошика, щоб продовжити</p>
+                            <p>Додайте послуги до кошика, щоб продовжити</p>
                             <a href="{% url 'service_list' %}" class="btn btn-success mt-3">
                                 <i class="fas fa-arrow-left me-2"></i> Перейти до каталогу
                             </a>

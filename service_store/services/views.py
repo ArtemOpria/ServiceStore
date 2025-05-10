@@ -112,6 +112,7 @@ def service_list(request):
 def service_detail(request, service_id):
     service = get_object_or_404(Service, id=service_id)
     reviews = service.reviews.all().order_by('-created_at')
+    gallery_images = service.get_gallery_images()
     review_form = None
     user_review = None
     
@@ -176,6 +177,11 @@ def service_detail(request, service_id):
         half_star = (avg_rating - full_stars) >= 0.25 and (avg_rating - full_stars) < 0.75
         empty_stars = 5 - full_stars - int(half_star)
         star_list = ['full'] * full_stars + ['half'] * int(half_star) + ['empty'] * empty_stars
+    
+    related_services = []
+    if service.categories.exists():
+        categories = service.categories.all()
+        related_services = Service.objects.filter(categories__in=categories).exclude(id=service.id).distinct()[:4]
 
     context = {
         'service': service,
@@ -184,7 +190,9 @@ def service_detail(request, service_id):
         'user_review': user_review,
         'reviews_count': reviews.count(),
         'avg_rating': avg_rating,
-        'star_list': star_list
+        'star_list': star_list,
+        'related_services': related_services,
+        'gallery_images': gallery_images
     }
     
     return render(request, 'services/service_detail.html', context)
@@ -214,7 +222,7 @@ def toggle_favorite(request, service_id):
 
 def check_auth_for_cart(request, service_id):
     """
-    Перевіряє авторизацію користувача для додавання товару до кошика.
+    Перевіряє авторизацію користувача для додавання послуги до кошика.
     Якщо користувач не авторизований, перенаправляє на сторінку входу.
     """
     if not request.user.is_authenticated:
@@ -222,7 +230,7 @@ def check_auth_for_cart(request, service_id):
         return JsonResponse({
             'status': 'redirect',
             'redirect_url': login_url,
-            'message': "Для додавання товару до кошика необхідно увійти в акаунт."
+            'message': "Для додавання послуги до кошика необхідно увійти в акаунт."
         })
     
     # Якщо користувач авторизований, повертаємо успішну відповідь

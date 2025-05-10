@@ -1,0 +1,58 @@
+/* Стилі для галереї зображень */
+.gallery-additional .gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.gallery-additional .gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.gallery-additional .gallery-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.gallery-additional .gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Стилі для повноекранного перегляду */
+#fullscreen-image {
+    max-height: 85vh;
+    max-width: 90vw;
+    object-fit: contain;
+}
+
+.modal-fullscreen .modal-body {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 120px);
+}
+
+.modal-fullscreen .modal-header,
+.modal-fullscreen .modal-footer {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Навігаційні кнопки */
+#prev-image, #next-image {
+    transition: transform 0.3s ease;
+}
+
+#prev-image:hover {
+    transform: translateX(-5px);
+}
+
+#next-image:hover {
+    transform: translateX(5px);
+}

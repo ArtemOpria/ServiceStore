@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load image_helpers %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/components/review.css' %}">
+<link rel="stylesheet" href="{% static 'css/components/gallery.css' %}">
 {% endblock %}
 
 {% block hero %}
@@ -31,14 +33,21 @@
             <div class="product-gallery d-flex shadow-sm rounded p-3 bg-white ">
                 <!-- Вертикальні мініатюри зліва -->
                 <div class="gallery-thumbnails me-3">
-                    <img src="{% static 'images/placeholder.jpg' %}" class="gallery-thumbnail active rounded" data-src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }} - мініатюра 1">
-                    <img src="{% static 'images/placeholder.jpg' %}" class="gallery-thumbnail rounded" data-src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }} - мініатюра 2">
-                    <img src="{% static 'images/placeholder.jpg' %}" class="gallery-thumbnail rounded" data-src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }} - мініатюра 3">
-                    <img src="{% static 'images/placeholder.jpg' %}" class="gallery-thumbnail rounded" data-src="{% static 'images/placeholder.jpg' %}" alt="{{ service.name }} - мініатюра 4">
+                    <!-- Основне зображення як перша мініатюра -->
+                    <img src="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" class="gallery-thumbnail active rounded" data-src="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" alt="{{ service.name }} - основне зображення">
+                    
+                    <!-- Додаткові зображення з галереї -->
+                    {% if gallery_images %}
+                        {% for image in gallery_images|slice:":3" %}
+                            {% if image.image and image.image.url|file_exists %}
+                                <img src="{{ image.image.url }}" class="gallery-thumbnail rounded" data-src="{{ image.image.url }}" alt="{{ image.title|default:service.name }}">
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
                 <!-- Основне зображення -->
                 <div class="gallery-main">
-                    <img src="{% if service.image %}{{ service.image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}" class="gallery-main-image rounded" id="main-product-image" alt="{{ service.name }}">
+                    <img src="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" class="gallery-main-image rounded gallery-image" id="main-product-image" alt="{{ service.name }}" data-image-id="main" data-image-url="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" data-image-title="{{ service.name }}">
                 </div>
             </div>
         </div>
@@ -136,9 +145,6 @@
                             <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Опис</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="additional-tab" data-bs-toggle="tab" data-bs-target="#additional" type="button" role="tab" aria-controls="additional" aria-selected="false">Додаткова інформація</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">Відгуки</button>
                         </li>
                     </ul>
@@ -169,7 +175,7 @@
                                                     <i class="fas fa-shield-alt" style="font-size: 2rem; color: #5a4a42;"></i>
                                                 </div>
                                                 <h5>Гарантія</h5>
-                                                <p class="small mb-0">Захист на 2 роки</p>
+                                                <p class="small mb-0">Повернення/Обмін згідно з законодавством України</p>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-3">
@@ -178,7 +184,7 @@
                                                     <i class="fas fa-truck" style="font-size: 2rem; color: #5a4a42;"></i>
                                                 </div>
                                                 <h5>Безкоштовна доставка</h5>
-                                                <p class="small mb-0">При замовленні від 150 грн</p>
+                                                <p class="small mb-0">При замовленні від 1000 грн</p>
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-lg-3">
@@ -192,33 +198,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Таб з додатковою інформацією -->
-                        <div class="tab-pane fade" id="additional" role="tabpanel" aria-labelledby="additional-tab">
-                            <h3 class="mb-4">Додаткова інформація</h3>
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row" class="bg-light">Тривалість</th>
-                                            <td>Від 1 до 3 годин</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" class="bg-light">Гарантія</th>
-                                            <td>6 місяців</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" class="bg-light">Матеріали</th>
-                                            <td>Включені у вартість</td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row" class="bg-light">Виїзд майстра</th>
-                                            <td>Безкоштовно в межах міста</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                         
@@ -320,25 +299,62 @@
         </div>
         <div class="col-12">
             <div class="row g-3 gallery-additional">
-                <div class="col-md-3 col-6">
-                    <div class="gallery-item">
-                        <img src="{% static 'images/placeholder.jpg' %}" alt="Галерея 1" class="img-fluid rounded">
-                    </div>
+                {% if gallery_images %}
+                    <!-- Спочатку показуємо основне зображення послуги -->
+                    {% if service.image and service.image.url|file_exists %}
+                        <div class="col-md-3 col-6">
+                            <div class="gallery-item">
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="img-fluid rounded gallery-image" data-image-id="main" data-image-url="{{ service.image.url }}" data-image-title="{{ service.name }}">
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Потім показуємо додаткові зображення з галереї -->
+                    {% for image in gallery_images %}
+                        {% if image.image and image.image.url|file_exists %}
+                            <div class="col-md-3 col-6">
+                                <div class="gallery-item">
+                                    <img src="{{ image.image.url }}" alt="{{ image.title|default:service.name }}" class="img-fluid rounded gallery-image" data-image-id="{{ image.id }}" data-image-url="{{ image.image.url }}" data-image-title="{{ image.title|default:service.name }}">
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <!-- Якщо немає додаткових зображень, показуємо основне зображення послуги -->
+                    {% if service.image and service.image.url|file_exists %}
+                        <div class="col-md-3 col-6">
+                            <div class="gallery-item">
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="img-fluid rounded gallery-image" data-image-id="main" data-image-url="{{ service.image.url }}" data-image-title="{{ service.name }}">
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Якщо немає жодного зображення, показуємо повідомлення -->
+                        <div class="col-12">
+                            <div class="alert alert-light rounded shadow-sm p-4 text-center border">
+                                <i class="far fa-images fa-3x mb-3 text-muted"></i>
+                                <p class="mb-0 fs-5">Зображення для цієї послуги поки що відсутні.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальне вікно для повноекранного перегляду зображень -->
+    <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="galleryModalLabel">Перегляд зображення</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="gallery-item">
-                        <img src="{% static 'images/placeholder.jpg' %}" alt="Галерея 2" class="img-fluid rounded">
-                    </div>
+                <div class="modal-body d-flex align-items-center justify-content-center">
+                    <img src="" id="fullscreen-image" class="img-fluid" alt="Повноекранне зображення">
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="gallery-item">
-                        <img src="{% static 'images/placeholder.jpg' %}" alt="Галерея 3" class="img-fluid rounded">
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="gallery-item">
-                        <img src="{% static 'images/placeholder.jpg' %}" alt="Галерея 4" class="img-fluid rounded">
-                    </div>
+                <div class="modal-footer border-0 justify-content-between">
+                    <button type="button" class="btn btn-outline-light" id="prev-image"><i class="fas fa-chevron-left"></i> Попереднє</button>
+                    <button type="button" class="btn btn-outline-light" id="next-image">Наступне <i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
@@ -348,101 +364,50 @@
     <div class="row mt-5">
         <div class="col-12 d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-title mb-0">Пов'язані послуги</h2>
-            {% if service.category %}
-                <a href="{% url 'service_list' %}?category={{ service.category.id }}" class="btn btn-outline-success">Показати більше</a>
+            {% if service.categories.first %}
+                <a href="{% url 'service_list' %}?category={{ service.categories.first.id }}" class="btn btn-outline-success">Показати більше</a>
             {% else %}
                 <a href="{% url 'service_list' %}" class="btn btn-outline-success">Показати більше</a>
             {% endif %}
         </div>
         <div class="col-12">
             <div class="row g-4 related-services">
-                <!-- Пов'язана послуга 1 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="card service-card h-100 border-0 shadow-sm">
-                        <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="Послуга 1">
-                        <div class="card-body">
-                            <h5 class="card-title">Послуга 1</h5>
-                            <div class="product-rating mb-2">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                            </div>
-                            <p class="card-text">Короткий опис послуги...</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="price">500 грн</span>
-                                <a href="#" class="btn btn-sm btn-outline-success">Детальніше</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Пов'язана послуга 2 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="card service-card h-100 border-0 shadow-sm">
-                        <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="Послуга 2">
-                        <div class="card-body">
-                            <h5 class="card-title">Послуга 2</h5>
-                            <div class="product-rating mb-2">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <p class="card-text">Короткий опис послуги...</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="price">750 грн</span>
-                                <a href="#" class="btn btn-sm btn-outline-success">Детальніше</a>
+                {% if related_services %}
+                    {% for related_service in related_services %}
+                        <div class="col-lg-3 col-md-6">
+                            <div class="card service-card h-100 border-0 shadow-sm">
+                                <a href="{% url 'service_detail' related_service.id %}">
+                                    <img src="{% if related_service.image and related_service.image.url|file_exists %}{{ related_service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" class="card-img-top" alt="{{ related_service.name }}">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ related_service.name }}</h5>
+                                    <div class="product-rating mb-2">
+                                        {% with avg_rating=related_service.get_average_rating %}
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= avg_rating|floatformat:0|add:"0" %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endwith %}
+                                    </div>
+                                    <p class="card-text">{{ related_service.description|truncatechars:60 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="price">{{ related_service.price }} грн</span>
+                                        <a href="{% url 'service_detail' related_service.id %}" class="btn btn-sm btn-outline-success">Детальніше</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">Немає пов'язаних послуг</p>
                     </div>
-                </div>
-                
-                <!-- Пов'язана послуга 3 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="card service-card h-100 border-0 shadow-sm">
-                        <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="Послуга 3">
-                        <div class="card-body">
-                            <h5 class="card-title">Послуга 3</h5>
-                            <div class="product-rating mb-2">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                                <i class="far fa-star"></i>
-                            </div>
-                            <p class="card-text">Короткий опис послуги...</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="price">600 грн</span>
-                                <a href="#" class="btn btn-sm btn-outline-success">Детальніше</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Пов'язана послуга 4 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="card service-card h-100 border-0 shadow-sm">
-                        <img src="{% static 'images/placeholder.jpg' %}" class="card-img-top" alt="Послуга 4">
-                        <div class="card-body">
-                            <h5 class="card-title">Послуга 4</h5>
-                            <div class="product-rating mb-2">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                            </div>
-                            <p class="card-text">Короткий опис послуги...</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="price">850 грн</span>
-                                <a href="#" class="btn btn-sm btn-outline-success">Детальніше</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endif %}
+            </div>
+        </div>
             </div>
         </div>
     </div>

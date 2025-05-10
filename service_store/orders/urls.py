@@ -9,4 +9,5 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('update_cart/', views_ajax.update_cart, name='update_cart'),
     path('reorder/<int:order_id>/', views.reorder, name='reorder'),
+    path('payment/', views.payment, name='payment'),
 ]

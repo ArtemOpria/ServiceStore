@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load url_helpers %}
+{% load image_helpers %}
 
 {% block hero %}
 <div class="page-header">
@@ -29,7 +30,7 @@
                         <div class="product-card">
                             <div class="product-image">
                                 <a href="{% url 'service_detail' service.id %}">
-                                    <img src="{% if service.image %}{{ service.image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}" alt="{{ service.name }}">
+                                    <img src="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" alt="{{ service.name }}">
                                     <div class="product-overlay">
                                         <button class="btn btn-primary add-to-cart-icon" data-service-id="{{ service.id }}"><i class="fas fa-shopping-cart"></i></button>
                                         <button class="btn btn-light favorite-btn favorite-btn-ico" data-service-id="{{ service.id }}"><i class="fas fa-heart"></i></button>

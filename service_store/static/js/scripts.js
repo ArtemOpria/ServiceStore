@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Оновлюємо URL без перезавантаження сторінки
         window.history.pushState({}, '', url);
 
-        // Відправляємо AJAX запит для отримання кількості товарів
+        // Відправляємо AJAX запит для отримання кількості послуг
         fetch(url)
             .then(response => response.text())
             .then(html => {

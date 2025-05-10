@@ -79,7 +79,69 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Функціонал для кількості товару
+    // Функціонал для повноекранного перегляду галереї
+    const galleryImages = document.querySelectorAll('.gallery-image');
+    const galleryModal = new bootstrap.Modal(document.getElementById('galleryModal'));
+    const fullscreenImage = document.getElementById('fullscreen-image');
+    const modalTitle = document.getElementById('galleryModalLabel');
+    const prevButton = document.getElementById('prev-image');
+    const nextButton = document.getElementById('next-image');
+    
+    let currentImageIndex = 0;
+    const imagesData = [];
+    
+    // Збираємо дані про всі зображення галереї
+    galleryImages.forEach((image, index) => {
+        imagesData.push({
+            id: image.getAttribute('data-image-id'),
+            url: image.getAttribute('data-image-url'),
+            title: image.getAttribute('data-image-title')
+        });
+        
+        // Додаємо обробник кліку для відкриття модального вікна
+        image.addEventListener('click', function() {
+            currentImageIndex = index;
+            showFullscreenImage(currentImageIndex);
+            galleryModal.show();
+        });
+    });
+    
+    // Функція для відображення зображення у повноекранному режимі
+    function showFullscreenImage(index) {
+        if (imagesData.length === 0) return;
+        
+        const imageData = imagesData[index];
+        fullscreenImage.src = imageData.url;
+        modalTitle.textContent = imageData.title || 'Перегляд зображення';
+    }
+    
+    // Обробники для кнопок навігації
+    prevButton.addEventListener('click', function() {
+        currentImageIndex = (currentImageIndex - 1 + imagesData.length) % imagesData.length;
+        showFullscreenImage(currentImageIndex);
+    });
+    
+    nextButton.addEventListener('click', function() {
+        currentImageIndex = (currentImageIndex + 1) % imagesData.length;
+        showFullscreenImage(currentImageIndex);
+    });
+    
+    // Додаємо обробник клавіш для навігації
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('galleryModal').classList.contains('show')) return;
+        
+        if (e.key === 'ArrowLeft') {
+            currentImageIndex = (currentImageIndex - 1 + imagesData.length) % imagesData.length;
+            showFullscreenImage(currentImageIndex);
+        } else if (e.key === 'ArrowRight') {
+            currentImageIndex = (currentImageIndex + 1) % imagesData.length;
+            showFullscreenImage(currentImageIndex);
+        } else if (e.key === 'Escape') {
+            galleryModal.hide();
+        }
+    });
+    
+    // Функціонал для кількості послуг
     const decreaseBtn = document.getElementById('decrease-quantity');
     const increaseBtn = document.getElementById('increase-quantity');
     const quantityInput = document.getElementById('quantity');

@@ -4,6 +4,10 @@ import os
 def service_image_path(instance, filename):
     # Генеруємо шлях для збереження зображення: media/services/<filename>
     return os.path.join('services', filename)
+    
+def service_gallery_path(instance, filename):
+    # Генеруємо шлях для збереження зображень галереї: media/services/gallery/<service_id>/<filename>
+    return os.path.join('services', 'gallery', str(instance.service.id), filename)
 
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -34,6 +38,17 @@ class Service(models.Model):
 
     def __str__(self):
         return self.name
+        
+    def get_average_rating(self):
+        reviews = self.reviews.all()
+        if reviews.exists():
+            total_rating = sum(review.rating for review in reviews)
+            return total_rating / reviews.count()
+        return 0
+        
+    def get_gallery_images(self):
+        """Повертає всі зображення галереї для цієї послуги"""
+        return self.gallery_images.all()
 
 
 class Review(models.Model):
@@ -48,3 +63,19 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review by {self.user.username} for {self.service.name}"
+
+
+class ServiceImage(models.Model):
+    service = models.ForeignKey(Service, related_name='gallery_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=service_gallery_path)
+    title = models.CharField(max_length=255, blank=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Зображення галереї'
+        verbose_name_plural = 'Зображення галереї'
+    
+    def __str__(self):
+        return f"Зображення для {self.service.name} #{self.order}"

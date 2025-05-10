@@ -7,11 +7,11 @@ class AdminAuthenticationForm(AuthenticationForm):
     Форма аутентифікації для адмін-панелі з українськими повідомленнями про помилки.
     """
     username = forms.CharField(
-        label='Ім\'я адміністратора',
+        label='Електронна пошта',
         widget=forms.TextInput(attrs={'class': 'form-control', 'required': True}),
         error_messages={
             'required': 'Це поле обов\'язкове.',
-            'invalid': 'Введіть коректне ім\'я адміністратора.'
+            'invalid': 'Введіть коректну електронну пошту'
         }
     )
     password = forms.CharField(
@@ -21,6 +21,6 @@ class AdminAuthenticationForm(AuthenticationForm):
     )
 
     error_messages = {
-        'invalid_login': 'Будь ласка, введіть правильне ім\'я адміністратора та пароль',
+        'invalid_login': 'Будь ласка, перевірте дані входу та спробуйте ще раз.',
         'inactive': 'Цей обліковий запис неактивний.'
     }

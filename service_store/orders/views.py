@@ -8,11 +8,36 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Order, OrderItem
 from services.models import Service
 from utils.decorators import login_required_with_message
+from django.http import Http404
 
 
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'orders/order_detail.html', {'order': order})
+
+
+@login_required_with_message(message="Для оплати замовлення необхідно увійти в акаунт.")
+def payment(request):
+    # Отримуємо ID замовлення з сесії
+    order_id = request.session.get('order_id')
+    if not order_id:
+        messages.error(request, 'Замовлення не знайдено')
+        return redirect('cart')
+    
+    try:
+        # Отримуємо замовлення з бази даних
+        order = Order.objects.get(id=order_id, user=request.user)
+        
+        # Перевіряємо, чи метод оплати - Google Pay
+        if order.payment_method != 'googlepay':
+            messages.error(request, 'Неправильний метод оплати')
+            return redirect('order_detail', order_id=order.id)
+        
+        # Відображаємо сторінку оплати
+        return render(request, 'orders/payment.html', {'order': order})
+    
+    except Order.DoesNotExist:
+        raise Http404('Замовлення не знайдено')
 
 
 def cart(request):
@@ -198,6 +223,21 @@ def checkout(request):
             from_email = 'noreply@servicestore.com'
             to_email = email
             
+            # Якщо обрано оплату через Google Pay, перенаправляємо на сторінку оплати
+            if payment_method == 'googlepay':
+                request.session['order_id'] = order.id
+                
+                # Відправляємо підтвердження на електронну пошту
+                send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+                
+                # Очищаємо кошик, якщо не Google Pay (для Google Pay кошик очищається після оплати)
+                return redirect('payment')
+            
+            # Очищаємо кошик після успішного оформлення замовлення
+            if 'cart' in request.session:
+                del request.session['cart']
+                request.session.modified = True
+            
             send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
             
             # Очищаємо кошик
@@ -255,19 +295,12 @@ def checkout(request):
 
 @login_required_with_message(message="Для повторного замовлення необхідно увійти в акаунт.")
 def reorder(request, order_id):
-    # Отримуємо замовлення за ID та перевіряємо, що воно належить поточному користувачу
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    
-    # Створюємо новий кошик з товарами з замовлення
     new_cart = {}
-    
-    # Додаємо кожен товар з замовлення до кошика
     for item in order.items.all():
         new_cart[str(item.service.id)] = item.quantity
     
-    # Зберігаємо новий кошик в сесії
     request.session['cart'] = new_cart
     request.session.modified = True
     
-    # Перенаправляємо на сторінку кошика
     return redirect('cart')

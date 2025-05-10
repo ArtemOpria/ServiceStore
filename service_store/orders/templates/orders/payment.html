@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+<link href="{% static 'css/components/payment.css' %}" rel="stylesheet">
+
+{% block hero %}
+<div class="page-header">
+    <div class="page-header-overlay">
+        <div class="container">
+            <h1>Оплата замовлення</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Головна</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cart' %}">Кошик</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'checkout' %}">Оформлення замовлення</a></li>
+                    <li class="breadcrumb-item active">Оплата</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card payment-card">
+                <div class="card-body text-center">
+                    <div id="payment-step-1">
+                        <img src="{% static 'img/google-pay-logo.png' %}" alt="Google Pay" class="payment-logo mb-4" onerror="this.src='https://developers.google.com/static/pay/api/images/brand-guidelines/google-pay-mark.png'; this.onerror=null;">
+                        <h2 class="mb-4">Оплата через Google Pay</h2>
+                        <p class="mb-4">Сума до сплати: <strong>₴{{ order.total_price }}</strong></p>
+                        <p class="text-muted mb-4">Натисніть кнопку нижче, щоб підтвердити оплату</p>
+                        {% csrf_token %}
+                        <button id="confirm-payment" class="btn btn-primary btn-lg payment-btn">Підтвердити оплату</button>
+                    </div>
+                    
+                    <div id="payment-step-2" style="display: none;">
+                        <div class="payment-processing">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Завантаження...</span>
+                            </div>
+                            <h3 class="mt-4">Обробка платежу</h3>
+                            <p class="text-muted">Будь ласка, зачекайте. Не закривайте цю сторінку.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="payment-step-3" style="display: none;">
+                        <div class="payment-success">
+                            <i class="fas fa-check-circle payment-success-icon"></i>
+                            <h3 class="mt-4">Оплата успішна!</h3>
+                            <p class="text-muted mb-4">Ваше замовлення успішно оплачено.</p>
+                            <a href="{% url 'order_detail' order.id %}" class="btn btn-primary btn-lg">Перейти до замовлення</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmBtn = document.getElementById('confirm-payment');
+    const step1 = document.getElementById('payment-step-1');
+    const step2 = document.getElementById('payment-step-2');
+    const step3 = document.getElementById('payment-step-3');
+    
+    confirmBtn.addEventListener('click', function() {
+        // Сховати крок 1 і показати крок 2 (обробка)
+        step1.style.display = 'none';
+        step2.style.display = 'block';
+        
+        // Імітація обробки платежу (3 секунди)
+        setTimeout(function() {
+            // Сховати крок 2 і показати крок 3 (успіх)
+            step2.style.display = 'none';
+            step3.style.display = 'block';
+            
+            // Очищаємо кошик після успішної оплати
+            // Використовуємо fetch для виклику серверного методу очищення кошика
+            fetch('/orders/update_cart/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    action: 'clear'
+                })
+            });
+            
+            // Автоматичне перенаправлення на сторінку замовлення через 3 секунди
+            setTimeout(function() {
+                window.location.href = document.querySelector('.payment-success a').getAttribute('href');
+            }, 3000);
+        }, 3000);
+    });
+});
+</script>
+{% endblock %}

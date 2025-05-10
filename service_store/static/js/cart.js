@@ -39,7 +39,7 @@ function addToCart(serviceId, quantity = 1) {
             return;
         }
         
-        // Якщо користувач авторизований, продовжуємо додавання товару до кошика
+        // Якщо користувач авторизований, продовжуємо додавання послуги до кошика
         // Get current cart
         let cart = JSON.parse(sessionStorage.getItem('cart'));
         
@@ -57,11 +57,11 @@ function addToCart(serviceId, quantity = 1) {
         updateServerCart(cart);
         
         // Show success message
-        showCartNotification('Товар додано до кошика');
+        showCartNotification('Послугу додано до кошика');
     })
     .catch(error => {
         console.error('Error checking authentication:', error);
-        showCartNotification('Помилка при додаванні товару до кошика');
+        showCartNotification('Помилка при додаванні послуги до кошика');
     });
 }
 
@@ -91,7 +91,7 @@ function updateServerCart(cart) {
             const redirectUrl = response.headers.get('Location');
             
             // Показуємо повідомлення користувачу про необхідність авторизації
-            showCartNotification('Для додавання товару до кошика необхідно увійти в акаунт.');
+            showCartNotification('Для додавання послуги до кошика необхідно увійти в акаунт.');
             
             // Перенаправляємо на сторінку входу через 2 секунди
             setTimeout(() => {
@@ -146,8 +146,7 @@ function showCartNotification(message) {
     messageText.textContent = message;
     notification.appendChild(messageText);
     
-    // Додаємо кнопку переходу до кошика, якщо повідомлення про додавання товару
-    if (message.includes('Товар додано до кошика')) {
+    if (message.includes('Послугу додано до кошика')) {
         const goToCartButton = document.createElement('a');
         goToCartButton.href = '/orders/cart/';
         goToCartButton.className = 'go-to-cart-button';
@@ -302,7 +301,7 @@ function removeItem(serviceId) {
     updateServerCart(cart);
     
     // Show notification
-    showCartNotification('Товар видалено з кошика');
+    showCartNotification('Послугу видалено з кошика');
 }
 
 // Clear cart completely (used after checkout or when user manually clears cart)

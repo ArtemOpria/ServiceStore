@@ -1,10 +1,28 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from .forms import ProfileForm, CustomUserCreationForm, CustomAuthenticationForm
 from .models import Profile, CustomUser
+from functools import wraps
+
+
+def user_role_required(view_func):
+    """Декоратор для перевірки, що користувач має роль USER"""
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+        if request.user.role != CustomUser.USER:
+            messages.warning(request, 'Ця сторінка доступна лише для звичайних користувачів')
+            if request.user.role == CustomUser.ADMIN:
+                return redirect('admin:index')
+            elif request.user.role == CustomUser.MANAGER:
+                return redirect('manager:index')
+            return redirect('home')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 
 
 def register(request):
@@ -29,6 +47,10 @@ def user_login(request):
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=email, password=password)
             if user is not None:
+                # Перевірка ролі користувача - адміністратори та менеджери не можуть входити через цю форму
+                if user.role in [CustomUser.ADMIN, CustomUser.MANAGER]:
+                    messages.error(request, 'Для авторизації перейдіть на сторінку логіну адміністратора')
+                    return redirect('login')
                 login(request, user)
                 messages.success(request, 'Ви успішно увійшли!')
                 return redirect('home')
@@ -44,7 +66,7 @@ def user_logout(request):
     return redirect('home')
 
 
-@login_required
+@user_role_required
 def profile(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
 
@@ -73,7 +95,7 @@ def profile(request):
     })
 
 
-@login_required
+@user_role_required
 def password_change(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
     profile_form = ProfileForm(instance=profile)

@@ -7,19 +7,29 @@ from utils.decorators import login_required_with_message
 
 @require_POST
 @csrf_exempt
-@login_required_with_message(message="Для додавання товару до кошика необхідно увійти в акаунт.")
+@login_required_with_message(message="Для додавання послуги до кошика необхідно увійти в акаунт.")
 def update_cart(request):
     """Update the cart in the session and handle authentication checks"""
     try:
         data = json.loads(request.body)
-        cart_data = data.get('cart', {})
-        check_auth = data.get('check_auth', False)
+        action = data.get('action', None)
         
         # Prepare response data
         response_data = {
             'status': 'success',
             'is_authenticated': request.user.is_authenticated
         }
+        
+        # Якщо дія - очистити кошик
+        if action == 'clear':
+            if 'cart' in request.session:
+                del request.session['cart']
+                request.session.modified = True
+            response_data['cart_cleared'] = True
+            return JsonResponse(response_data)
+        
+        cart_data = data.get('cart', {})
+        check_auth = data.get('check_auth', False)
         
         # If this is an authentication check request
         if check_auth:

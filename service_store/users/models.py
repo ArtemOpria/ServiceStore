@@ -33,10 +33,20 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
+    ADMIN = 'admin'
+    MANAGER = 'manager'
+    USER = 'user'
+    ROLE_CHOICES = [
+        (ADMIN, _('Administrator')),
+        (MANAGER, _('Manager')),
+        (USER, _('User')),
+    ]
+    
     username = None
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=100)
     last_name = models.CharField(_('last name'), max_length=100)
+    role = models.CharField(_('role'), max_length=20, choices=ROLE_CHOICES, default=USER)
 
     USERNAME_FIELD = 'email'  # Set email as the authentication field
     REQUIRED_FIELDS = ['first_name', 'last_name']  # Required fields for createsuperuser
