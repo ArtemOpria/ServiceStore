@@ -1,19 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Додаємо прямі обробники для кнопок редагування при завантаженні сторінки
     const editButtons = document.querySelectorAll('.edit-review-btn');
-    console.log('Пошук кнопок редагування на сторінці...');
     if (editButtons.length > 0) {
-        console.log('Знайдено кнопки редагування:', editButtons.length);
         editButtons.forEach(button => {
-            console.log('Додаємо обробник для кнопки:', button);
             button.addEventListener('click', function(e) {
                 e.preventDefault(); // Запобігаємо стандартній поведінці
-                console.log('Пряме натискання на кнопку редагування');
                 const reviewId = this.getAttribute('data-review-id');
                 const rating = this.getAttribute('data-rating');
                 const comment = this.getAttribute('data-comment');
                 
-                console.log('Дані для редагування:', { reviewId, rating, comment });
                 
                 // Показуємо форму редагування
                 const reviewFormContainer = document.getElementById('review-form-container');
@@ -238,7 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault(); // Запобігаємо стандартній поведінці
             event.stopPropagation(); // Зупиняємо подальше розповсюдження події
             
-            console.log('Клік на кнопку редагування через делегування');
             
             const button = event.target.classList.contains('edit-review-btn') ? 
                           event.target : 
@@ -248,7 +242,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const rating = button.getAttribute('data-rating');
             const comment = button.getAttribute('data-comment');
             
-            console.log('Дані для редагування через делегування:', { reviewId, rating, comment });
             
             // Показуємо форму редагування
             const reviewFormContainer = document.getElementById('review-form-container');
@@ -319,7 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
                 
-                console.log('Видалення відгуку:', { reviewId, serviceId });
                 
                 fetch(`/services/${serviceId}/`, {
                     method: 'POST',
@@ -334,28 +326,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(response => {
                     if (response.ok) {
-                        // Видаляємо елемент відгуку з DOM
-                        const reviewItem = button.closest('.review-item');
-                        if (reviewItem) reviewItem.remove();
-                        
-                        // Оновлюємо лічильник відгуків
-                        const reviewsCount = document.querySelectorAll('.review-item').length;
-                        const reviewsHeading = document.querySelector('.reviews-section h3');
-                        if (reviewsHeading) {
-                            reviewsHeading.textContent = `Відгуки клієнтів (${reviewsCount})`;
-                        }
-                        
-                        // Показуємо повідомлення, якщо немає відгуків
-                        if (reviewsCount === 0) {
-                            const reviewsList = document.querySelector('.reviews-list');
-                            if (reviewsList) {
-                                reviewsList.innerHTML = `
-                                    <div class="alert alert-light">
-                                        <p class="mb-0">Поки що немає відгуків для цієї послуги. Будьте першим, хто залишить відгук!</p>
-                                    </div>
-                                `;
-                            }
-                        }
+                        // Перезавантажуємо сторінку після успішного видалення відгуку
+                        window.location.reload();
                     } else {
                         alert('Помилка при видаленні відгуку. Спробуйте ще раз.');
                     }
@@ -390,14 +362,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             let url = `/services/${serviceId}/`;
             
-            console.log('Відправляємо відгук:', {
-                action: isEditMode ? 'edit_review' : 'add_review',
-                service_id: serviceId,
-                review_id: reviewId,
-                rating: rating,
-                comment: comment
-            });
-            
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -413,14 +377,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             })
             .then(response => {
-                console.log('Статус відповіді:', response.status);
                 return response.json().catch(e => {
                     console.error('Помилка при розборі JSON:', e);
                     return { status: 'error', message: 'Неправильний формат відповіді' };
                 }).then(data => {
-                    console.log('Відповідь сервера:', data);
                     if (data.status === 'success' || response.ok) {
-                        // Перезавантажуємо сторінку для відображення змін
                         window.location.reload();
                     } else {
                         const errorMsg = data.errors ? JSON.stringify(data.errors) : (data.message || 'Спробуйте ще раз.');
@@ -429,7 +390,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             })
             .catch(error => {
-                console.error('Помилка:', error);
                 alert('Помилка при збереженні відгуку. Спробуйте ще раз.');
             });
         });

@@ -212,24 +212,24 @@
                                 </div>
                                 
                                 <!-- Форма для додавання/редагування відгуку -->
-                                {% if user.is_authenticated and review_form %}
+                                {% if user.is_authenticated %}
                                 <div class="review-form-container mb-4 p-4 border rounded shadow-sm bg-white" id="review-form-container" style="display: none;">
                                     <h4 class="mb-3 fw-bold" id="review-form-title"><i class="fas fa-pen-fancy me-2 text-primary"></i>Залишити відгук</h4>
-                                    <form id="review-form" method="post" data-service-id="{{ service.id }}">
-                                        {% csrf_token %}
-                                        <div class="mb-3 bg-light p-3 rounded">
-                                            <label for="id_rating" class="form-label fw-bold">{{ review_form.rating.label }}</label>
-                                            <div id="star-rating" class="star-rating fs-4">
-                                                {% for i in "12345"|make_list %}
-                                                    <i class="far fa-star text-warning" data-value="{{ forloop.counter }}"></i>
-                                                {% endfor %}
-                                                <input type="hidden" name="rating" id="id_rating" value="5">
-                                            </div>
-                                        </div>                                        
-                                        <div class="mb-3">
-                                            <label for="id_comment" class="form-label fw-bold">{{ review_form.comment.label }}</label>
-                                            <textarea name="comment" id="id_comment" class="form-control border" rows="4" placeholder="Напишіть ваш відгук тут..."></textarea>
-                                        </div>
+                                                <form id="review-form" method="post" data-service-id="{{ service.id }}">
+                                                    {% csrf_token %}
+                                                    <div class="mb-3 bg-light p-3 rounded">
+                                                        <label for="id_rating" class="form-label fw-bold">{{ review_form.rating.label }}</label>
+                                                        <div id="star-rating" class="star-rating fs-4">
+                                                            {% for i in "12345"|make_list %}
+                                                                <i class="far fa-star text-warning" data-value="{{ forloop.counter }}"></i>
+                                                            {% endfor %}
+                                                            <input type="hidden" name="rating" id="id_rating" value="5">
+                                                        </div>
+                                                    </div>                                        
+                                                    <div class="mb-3">
+                                                        <label for="id_comment" class="form-label fw-bold">{{ review_form.comment.label }}</label>
+                                                        <textarea name="comment" id="id_comment" class="form-control border" rows="4" placeholder="Напишіть ваш відгук тут..."></textarea>
+                                                    </div>
                                         <div class="d-flex justify-content-end gap-2">
                                             <button type="button" class="btn btn-outline-secondary" id="cancel-review-btn"><i class="fas fa-times me-2"></i>Скасувати</button>
                                             <button type="submit" class="btn btn-success"><i class="fas fa-paper-plane me-2"></i>Опублікувати</button>

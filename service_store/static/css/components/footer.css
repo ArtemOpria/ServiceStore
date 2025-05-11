@@ -1,0 +1,183 @@
+.footer {
+    background-color: #337c37;
+    color: white;
+    padding: 40px 0 20px;
+    margin-top: 50px;
+}
+
+.footer h5 {
+    font-weight: 600;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer h5:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: #fff;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: #e0e0e0;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-social {
+    margin-top: 20px;
+}
+
+.footer-social a {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 36px;
+    margin-right: 10px;
+    transition: all 0.3s;
+}
+
+.footer-social a:hover {
+    background-color: white;
+    color: #337c37;
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 768px) {
+    .footer {
+        padding: 30px 0 10px;
+        text-align: center;
+    }
+    
+    .footer h5:after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .footer-col {
+        margin-bottom: 30px;
+    }
+    
+    .footer-social {
+        margin-bottom: 20px;
+    }
+}
+
+/* Стилі для сторінки контактів */
+.contact-info-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+
+.contact-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #e8f5e9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: #337c37;
+    font-size: 1.2rem;
+}
+
+.contact-details h5 {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.contact-details p {
+    color: #666;
+    margin-bottom: 0;
+}
+
+.contact-form .form-control {
+    border-radius: 0;
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    height: auto;
+}
+
+.contact-form .form-control:focus {
+    box-shadow: none;
+    border-color: #337c37;
+}
+
+.contact-form textarea.form-control {
+    min-height: 150px;
+}
+
+.contact-form .btn-submit {
+    background-color: #337c37;
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.contact-form .btn-submit:hover {
+    background-color: #286c2b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(51, 124, 55, 0.3);
+}
+
+.contact-map {
+    height: 400px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .contact-info-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .contact-icon {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .contact-map {
+        height: 300px;
+        margin-top: 30px;
+    }
+}

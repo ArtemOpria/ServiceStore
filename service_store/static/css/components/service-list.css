@@ -460,6 +460,10 @@
     .filter-select-group {
         min-width: 160px;
     }
+
+    .filter-action {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 768px) {

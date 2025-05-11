@@ -89,4 +89,4 @@ document.addEventListener('DOMContentLoaded', function() {
         errorDiv.textContent = message;
         errorDiv.style.display = 'block';
     }
-}));
+});

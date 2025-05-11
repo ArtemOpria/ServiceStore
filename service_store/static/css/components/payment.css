@@ -6,27 +6,28 @@
 }
 
 .payment-logo {
-    max-width: 180px;
-    height: auto;
-    margin-bottom: 20px;
+    display: block;
+    max-height: -webkit-fill-available;
+    max-width: 100%;
+    width: 25%;
 }
 
 .payment-btn {
     padding: 12px 30px;
     font-size: 18px;
     border-radius: 30px;
-    background-color: #4285F4;
-    border-color: #4285F4;
+    background-color: #337c37;
+    border-color: #337c37;
     transition: all 0.3s ease;
     width: 100%;
     max-width: 300px;
 }
 
 .payment-btn:hover {
-    background-color: #3367D6;
-    border-color: #3367D6;
+    background-color: #286c2b;
+    border-color: #286c2b;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(66, 133, 244, 0.3);
+    box-shadow: 0 4px 10px rgba(51, 124, 55, 0.3);
 }
 
 .payment-processing {
@@ -41,18 +42,22 @@
 
 .payment-success-icon {
     font-size: 5rem;
-    color: #34A853;
+    color: #337c37;
 }
 
 .payment-success {
     padding: 30px 0;
 }
 
+#payment-step-1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
 /* Адаптивність для мобільних пристроїв */
 @media (max-width: 576px) {
-    .payment-logo {
-        max-width: 150px;
-    }
     
     .payment-btn {
         font-size: 16px;

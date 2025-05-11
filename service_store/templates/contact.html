@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="page-header">
+    <div class="page-header-overlay">
+        <div class="container">
+            <h1>Контакти</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Головна</a></li>
+                    <li class="breadcrumb-item active">Контакти</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-6 mb-5 mb-lg-0">
+            <h2 class="mb-4">Зв'яжіться з нами</h2>
+            <p class="mb-4">Маєте питання чи пропозиції? Заповніть форму нижче, і ми зв'яжемося з вами якнайшвидше.</p>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form class="contact-form" method="post" action="{% url 'contact' %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <input type="text" class="form-control" name="name" placeholder="Ваше ім'я" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <input type="email" class="form-control" name="email" placeholder="Ваш email" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="subject" placeholder="Тема">
+                </div>
+                <div class="mb-4">
+                    <textarea class="form-control" name="message" rows="5" placeholder="Ваше повідомлення" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-submit">Надіслати повідомлення</button>
+            </form>
+        </div>
+        
+        <div class="col-lg-6">
+            <h2 class="mb-4">Контактна інформація</h2>
+            
+            <div class="contact-info-item">
+                <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="contact-details">
+                    <h5>Адреса</h5>
+                    <p>вул. Квіткова, 123, Київ, 01001, Україна</p>
+                </div>
+            </div>
+            
+            <div class="contact-info-item">
+                <div class="contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="contact-details">
+                    <h5>Телефон</h5>
+                    <p>+380 (50) 123-45-67</p>
+                    <p>+380 (67) 987-65-43</p>
+                </div>
+            </div>
+            
+            <div class="contact-info-item">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-details">
+                    <h5>Email</h5>
+                    <p>info@floralcharm.com</p>
+                    <p>support@floralcharm.com</p>
+                </div>
+            </div>
+            
+            <div class="contact-info-item">
+                <div class="contact-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="contact-details">
+                    <h5>Години роботи</h5>
+                    <p>Пн-Пт: 9:00 - 20:00</p>
+                    <p>Сб-Нд: 10:00 - 18:00</p>
+                </div>
+            </div>
+            
+            <div class="contact-map mt-4">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2541.519963677069!2d30.4936457!3d50.3815116!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40d4c895542a0689%3A0xa43f267810884fb7!2z0J3QvtGB0YLRj9GA0L3QuNC5INGD0LrQsNC30LDRgNC10LLQsCAjMTUsIDE1LCDQmtC40ZfQsiwgMDIwMDA!5e0!3m2!1suk!2sua!4v1718032000000!5m2!1suk!2sua" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

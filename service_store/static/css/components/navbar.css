@@ -85,6 +85,19 @@ header .navbar .navbar-nav .nav-link:hover::after {
     width: 70%;
 }
 
+/* Спеціальні стилі для іконки пошуку */
+header .navbar .dropdown .nav-link::after {
+    display: none;
+}
+
+header .navbar .dropdown .nav-link:hover::after {
+    width: 70%;
+}
+
+header .navbar .dropdown .nav-link:hover {
+    transform: translateY(-2px);
+}
+
 header .navbar .fas {
     font-size: 1.2rem;
     color: #ffffff;

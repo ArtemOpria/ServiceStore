@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.http import JsonResponse
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -21,13 +22,17 @@ from django.conf.urls.static import static
 from . import views
 from . import admin as admin_config  # Імпортуємо налаштування адмін-панелі
 
+def chrome_devtools(request):
+    return JsonResponse({})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('contact/', views.contact, name='contact'),
     path('services/', include('services.urls')),
     path('orders/', include('orders.urls')),
     path('users/', include('users.urls')),
+    path('.well-known/appspecific/com.chrome.devtools.json', chrome_devtools),
 ]
 
 # Додаємо URL-шаблони для обслуговування медіа-файлів у режимі розробки
