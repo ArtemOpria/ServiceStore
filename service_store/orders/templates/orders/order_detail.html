@@ -14,7 +14,7 @@
                     <i class="fas fa-shopping-bag"></i>
                 </div>
                 <div class="text-center text-md-start">
-                    <h1>Замовлення #{{ order.id }}</h1>
+                    <h1>Замовлення #{{ order.order_number }}</h1>
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="d-flex flex-wrap gap-2">
@@ -46,7 +46,7 @@
                                     <tbody>
                                         <tr>
                                             <td class="text-muted"><i class="fas fa-hashtag me-2"></i>Номер замовлення:</td>
-                                            <td class="fw-bold">{{ order.id }}</td>
+                                            <td class="fw-bold">{{ order.order_number }}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-muted"><i class="fas fa-calendar-alt me-2"></i>Дата замовлення:</td>
