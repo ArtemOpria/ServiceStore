@@ -14,27 +14,41 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=255, unique=True, verbose_name='Назва')
+    description = models.TextField(blank=True, null=True, verbose_name='Опис')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Створено')
     
     def __str__(self):
         return self.name
     
     class Meta:
-        verbose_name_plural = 'Categories'
+        verbose_name = 'Категорія'
+        verbose_name_plural = 'Категорії'
 
 
 class Service(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    categories = models.ManyToManyField(Category, related_name='services', blank=True)
-    image = models.ImageField(upload_to=service_image_path, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='favorite_services', blank=True)
+    name = models.CharField(max_length=255, verbose_name='Назва')
+    description = models.TextField(verbose_name='Опис')
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Ціна')
+    categories = models.ManyToManyField(Category, related_name='services', blank=True, verbose_name='Категорії')
+    image = models.ImageField(upload_to=service_image_path, null=True, blank=True, verbose_name='Зображення')
+    is_active = models.BooleanField(default=True, verbose_name='Активна')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Створено')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Оновлено')
+    favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='favorite_services', blank=True, verbose_name='У списку бажань')
+    
+    class Meta:
+        verbose_name = 'Послуга'
+        verbose_name_plural = 'Послуги'
+        
+    # Вкладки для адмін-панелі
+    class Admin:
+        fieldsets = [
+            ('Інформація про послугу', {'fields': ['name', 'description', 'price', 'image', 'is_active']}),
+            ('Загальне', {'fields': ['categories']}),
+            ('Деталі відгуків', {'fields': ['favorited_by']}),
+            ('Дати', {'fields': ['created_at', 'updated_at']}),
+        ]
 
     def __str__(self):
         return self.name
@@ -52,30 +66,32 @@ class Service(models.Model):
 
 
 class Review(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    service = models.ForeignKey(Service, related_name='reviews', on_delete=models.CASCADE)
-    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Користувач')
+    service = models.ForeignKey(Service, related_name='reviews', on_delete=models.CASCADE, verbose_name='Послуга')
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], verbose_name='Рейтинг')
+    comment = models.TextField(verbose_name='Коментар')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Створено')
 
     class Meta:
         unique_together = ('user', 'service')
+        verbose_name = 'Відгук'
+        verbose_name_plural = 'Відгуки'
 
     def __str__(self):
         return f"Review by {self.user.username} for {self.service.name}"
 
 
 class ServiceImage(models.Model):
-    service = models.ForeignKey(Service, related_name='gallery_images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=service_gallery_path)
-    title = models.CharField(max_length=255, blank=True)
-    order = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    service = models.ForeignKey(Service, related_name='gallery_images', on_delete=models.CASCADE, verbose_name='Послуга')
+    image = models.ImageField(upload_to=service_gallery_path, verbose_name='Зображення')
+    title = models.CharField(max_length=255, blank=True, verbose_name='Назва')
+    order = models.PositiveIntegerField(default=0, verbose_name='Порядок')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Створено')
     
     class Meta:
         ordering = ['order']
-        verbose_name = 'Зображення галереї'
-        verbose_name_plural = 'Зображення галереї'
+        verbose_name = 'Зображення послуги'
+        verbose_name_plural = 'Зображення послуги'
     
     def __str__(self):
         return f"Зображення для {self.service.name} #{self.order}"

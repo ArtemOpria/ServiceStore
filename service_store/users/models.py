@@ -37,10 +37,14 @@ class CustomUser(AbstractUser):
     MANAGER = 'manager'
     USER = 'user'
     ROLE_CHOICES = [
-        (ADMIN, _('Administrator')),
-        (MANAGER, _('Manager')),
-        (USER, _('User')),
+        (ADMIN, 'Адміністратор'),
+        (MANAGER, 'Менеджер'),
+        (USER, 'Користувач'),
     ]
+    
+    class Meta:
+        verbose_name = 'Користувач'
+        verbose_name_plural = 'Користувачі'
     
     username = None
     email = models.EmailField(_('email address'), unique=True)
@@ -58,12 +62,16 @@ class CustomUser(AbstractUser):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=25, blank=True)
-    address = models.CharField(max_length=255, blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    zip_code = models.CharField(max_length=20, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pics', default='profile_pics/default.jpg', blank=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, verbose_name='Користувач')
+    phone_number = models.CharField(max_length=25, blank=True, verbose_name='Номер телефону')
+    address = models.CharField(max_length=255, blank=True, verbose_name='Адреса')
+    city = models.CharField(max_length=100, blank=True, verbose_name='Місто')
+    zip_code = models.CharField(max_length=20, blank=True, verbose_name='Поштовий індекс')
+    profile_picture = models.ImageField(upload_to='profile_pics', default='profile_pics/default.jpg', blank=True, verbose_name='Фото профілю')
+    
+    class Meta:
+        verbose_name = 'Профіль'
+        verbose_name_plural = 'Профілі'
 
     def __str__(self):
         return f"{self.user.email}'s Profile"

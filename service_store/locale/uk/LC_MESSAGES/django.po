@@ -170,3 +170,9 @@ msgstr "Виберіть значення"
 
 msgid "Empty"
 msgstr "Порожньо"
+
+msgid "Dashboard"
+msgstr "Панель керування"
+
+msgid "Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly."
+msgstr "Будь ласка, введіть свій старий пароль з міркувань безпеки, а потім двічі введіть новий пароль, щоб ми могли перевірити, чи правильно ви його ввели."

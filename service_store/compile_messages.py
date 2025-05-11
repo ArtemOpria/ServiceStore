@@ -44,8 +44,3 @@ def compile_messages():
 
 if __name__ == "__main__":
     compile_messages()
-    print("\nДля активації перекладів переконайтеся, що в settings.py встановлено:")
-    print("LANGUAGE_CODE = 'uk'")
-    print("USE_I18N = True")
-    print("USE_L10N = True")
-    print("\nТакож переконайтеся, що middleware 'django.middleware.locale.LocaleMiddleware' додано до MIDDLEWARE")

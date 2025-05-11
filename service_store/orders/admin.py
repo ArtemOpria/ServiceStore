@@ -9,19 +9,28 @@ class OrderItemInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'order_date', 'total_price', 'status')
     list_filter = ('status', 'order_date')
-    search_fields = ('user__username',)
+    search_fields = ('user__username', 'first_name', 'last_name', 'email', 'phone')
     date_hierarchy = 'order_date'
     ordering = ('-order_date',)
+    inlines = [OrderItemInline]
     
     fieldsets = (
-        ('Order Information', {
-            'fields': ('user', 'total_price')
+        ('Інформація про замовлення', {
+            'fields': ('user', 'total_price', 'first_name', 'last_name', 'email', 'phone')
         }),
-        ('Status Information', {
+        ('Інформація про доставку', {
+            'fields': ('address', 'city', 'zip_code', 'delivery_method', 'payment_method')
+        }),
+        ('Інформація про статус', {
             'fields': ('status',)
         }),
     )
     
     readonly_fields = ('order_date',)
+
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('order', 'service', 'quantity', 'unit_price', 'subtotal')
+    list_filter = ('order__status',)
+    search_fields = ('order__id', 'service__name')
 
 admin.site.register(Order, OrderAdmin)

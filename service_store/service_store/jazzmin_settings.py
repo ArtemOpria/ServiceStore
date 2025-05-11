@@ -15,6 +15,9 @@ JAZZMIN_SETTINGS = {
 
     # Авторські права
     "copyright": "Floral Charm © 2023",
+    
+    # Відключення футера
+    "show_footer": False,
 
     # Модель користувача (за замовчуванням: 'auth.User')
     "user_avatar": None,
@@ -45,11 +48,6 @@ JAZZMIN_SETTINGS = {
 
     # Користувацьке меню
     "custom_links": {
-        "users": [{
-            "name": "Профілі користувачів", 
-            "url": "admin:users_profile_changelist", 
-            "icon": "fas fa-id-card",
-        }],
     },
 
     # Переклади для меню
@@ -71,13 +69,11 @@ JAZZMIN_SETTINGS = {
     # Переклади для фільтрів
     "topmenu_links": [
         {"name": "Головна", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"name": "Сайт", "url": "/", "new_window": True},
-        {"name": "Підтримка", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+        {"name": "Веб-сайт", "url": "/", "new_window": True},
     ],
 
     # Переклади для навігації
     "usermenu_links": [
-        {"name": "Підтримка", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
         {"model": "auth.user"}
     ],
 

@@ -22,7 +22,7 @@ class ServiceAdmin(admin.ModelAdmin):
     ordering = ('-price',)
     inlines = [ServiceImageInline]
     fieldsets = (
-        ('Service Information', {
+        ('Інформація про послугу', {
             'fields': ('name', 'description', 'price', 'categories', 'image', 'is_active')
         }),
     )
@@ -30,7 +30,7 @@ class ServiceAdmin(admin.ModelAdmin):
     def view_gallery(self, obj):
         count = obj.gallery_images.count()
         if count:
-            return format_html('<a href="{}?service__id__exact={}">{} зображень</a>', 
+            return format_html('<a href="{}?service__id__exact={}">{} зображення</a>', 
                               '/admin/services/serviceimage/', obj.id, count)
         return "Немає зображень"
     view_gallery.short_description = 'Галерея'
@@ -44,7 +44,7 @@ class ServiceImageAdmin(admin.ModelAdmin):
     list_filter = ('service',)
     search_fields = ('service__name', 'title')
     ordering = ('service', 'order')
-    raw_id_fields = ('service',)
+    autocomplete_fields = ['service']
     
     fieldsets = (
         ('Зображення', {

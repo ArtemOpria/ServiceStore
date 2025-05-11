@@ -17,9 +17,6 @@ msgstr ""
 msgid "Users"
 msgstr "Користувачі"
 
-msgid "User"
-msgstr "Користувач"
-
 msgid "Custom User"
 msgstr "Користувач"
 
