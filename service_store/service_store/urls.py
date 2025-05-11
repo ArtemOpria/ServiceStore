@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls.i18n import i18n_patterns
 from . import views
 from . import admin as admin_config  # Імпортуємо налаштування адмін-панелі
 
@@ -26,14 +27,20 @@ def chrome_devtools(request):
     return JsonResponse({})
 
 urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),  # Add internationalization URLs
+    path('.well-known/appspecific/com.chrome.devtools.json', chrome_devtools),
+]
+
+# Add URL patterns with i18n support
+urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('contact/', views.contact, name='contact'),
     path('services/', include('services.urls')),
     path('orders/', include('orders.urls')),
     path('users/', include('users.urls')),
-    path('.well-known/appspecific/com.chrome.devtools.json', chrome_devtools),
-]
+    prefix_default_language=False,
+)
 
 # Додаємо URL-шаблони для обслуговування медіа-файлів у режимі розробки
 if settings.DEBUG:
