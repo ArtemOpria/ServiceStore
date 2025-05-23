@@ -95,6 +95,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             });
             
+            // Оновлюємо іконку кошика, встановлюючи кількість товарів на 0
+            if (typeof updateCartIcon === 'function') {
+                updateCartIcon(0);
+                
+                // Додатково оновлюємо відображення іконки кошика напряму
+                const cartBadge = document.querySelector('.cart-badge');
+                if (cartBadge) {
+                    cartBadge.style.display = 'none';
+                }
+            }
+            
             // Автоматичне перенаправлення на сторінку замовлення через 3 секунди
             setTimeout(function() {
                 window.location.href = document.querySelector('.payment-success a').getAttribute('href');

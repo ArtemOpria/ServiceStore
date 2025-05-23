@@ -169,7 +169,7 @@
                                 <tbody>
                                     {% for order in orders %}
                                     <tr>
-                                        <td>{{ order.id }}</td>
+                                        <td>{{ order.order_number }}</td>
                                         <td>{{ order.order_date|date:"d.m.Y H:i" }}</td>
                                         <td>
                                             {% if order.status == 'pending' %}
@@ -261,21 +261,6 @@
                                 </div>
                                 <button type="submit" class="profile-btn">Змінити пароль</button>
                             </form>
-                        </div>
-                        <div class="mb-4">
-                            <h5>Налаштування електронної пошти</h5>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="emailUpdates" checked>
-                                <label class="form-check-label" for="emailUpdates">
-                                    Отримувати оновлення про нові події
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="emailPromotions" checked>
-                                <label class="form-check-label" for="emailPromotions">
-                                    Отримувати рекламні листи
-                                </label>
-                            </div>
                         </div>
                         <div>
                             <h5>Видалення облікового запису</h5>

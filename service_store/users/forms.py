@@ -24,12 +24,7 @@ class CustomUserCreationForm(UserCreationForm):
         label='Прізвище',
         error_messages={'required': 'Це поле обов\'язкове.'}
     )
-    role = forms.ChoiceField(
-        label='Роль',
-        choices=get_user_model().ROLE_CHOICES,
-        initial=get_user_model().USER,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
+    # Роль користувача встановлюється автоматично як 'user'
     password1 = forms.CharField(
         label='Пароль',
         widget=forms.PasswordInput(),
@@ -60,14 +55,13 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'role', 'password1', 'password2')
+        fields = ('email', 'first_name', 'last_name', 'password1', 'password2')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['email'].widget.attrs.update({'class': 'form-control'})
         self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
         self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
-        self.fields['role'].widget.attrs.update({'class': 'form-control'})
         self.fields['password1'].widget.attrs.update({'class': 'form-control'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control'})
 

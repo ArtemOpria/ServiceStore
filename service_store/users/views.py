@@ -52,7 +52,6 @@ def user_login(request):
                     messages.error(request, 'Для авторизації перейдіть на сторінку логіну адміністратора')
                     return redirect('login')
                 login(request, user)
-                messages.success(request, 'Ви успішно увійшли!')
                 return redirect('home')
             else:
                 messages.error(request, 'Невірна електронна пошта або пароль')

@@ -218,6 +218,17 @@ function updateCartIcon(totalItems) {
         // Check if we're on the cart page
         const isCartPage = window.location.pathname.includes('/orders/cart/');
         
+        // Перевіряємо, чи ми на сторінці оплати
+        const isPaymentPage = window.location.pathname.includes('/orders/payment/');
+        
+        // Якщо ми на сторінці оплати, завжди приховуємо значок кошика
+        if (isPaymentPage) {
+            badge.style.display = 'none';
+            // Переконуємося, що кошик порожній в сесії
+            sessionStorage.setItem('cart', JSON.stringify({}));
+            return;
+        }
+        
         // Only show cart badge if we have items AND
         // either we're authenticated OR we're on a page that should show the cart for anonymous users
         const shouldShowBadge = totalItems > 0 && !isCartPage && 
@@ -307,7 +318,27 @@ function removeItem(serviceId) {
 // Clear cart completely (used after checkout or when user manually clears cart)
 function clearCart() {
     sessionStorage.setItem('cart', JSON.stringify({}));
-    updateServerCart({});
+    
+    // Відправляємо запит на сервер для очищення кошика
+    fetch('/orders/update_cart/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ action: 'clear' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            console.log('Кошик успішно очищено на сервері');
+        }
+    })
+    .catch(error => {
+        console.error('Помилка при очищенні кошика:', error);
+    });
+    
     updateCartIcon(0);
     const isCartPage = window.location.pathname.includes('/orders/cart/');
     const message = isCartPage ? 'Кошик успішно очищено!' : 'Замовлення оформлено успішно!';
@@ -321,6 +352,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get current cart and calculate unique items (number of keys in cart object)
     const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
     const uniqueItemsCount = Object.keys(cart).length;
+    
+    // Перевіряємо, чи ми на сторінці оплати
+    if (window.location.pathname.includes('/orders/payment/')) {
+        // Очищаємо кошик повністю, якщо ми на сторінці оплати
+        clearCart();
+    }
     
     // Перевіряємо, чи ми на сторінці профілю і чи є cookie для активації вкладки замовлень
     if (window.location.pathname.includes('/users/profile/')) {

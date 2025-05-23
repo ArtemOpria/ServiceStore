@@ -33,6 +33,11 @@ def payment(request):
             messages.error(request, 'Неправильний метод оплати')
             return redirect('order_detail', order_id=order.id)
         
+        # Очищаємо кошик в сесії
+        if 'cart' in request.session:
+            del request.session['cart']
+            request.session.modified = True
+        
         # Відображаємо сторінку оплати
         return render(request, 'orders/payment.html', {'order': order})
     
@@ -222,30 +227,18 @@ def checkout(request):
             plain_message = strip_tags(html_message)
             from_email = 'noreply@servicestore.com'
             to_email = email
-            
-            # Якщо обрано оплату через Google Pay, перенаправляємо на сторінку оплати
+
             if payment_method == 'googlepay':
                 request.session['order_id'] = order.id
-                
-                # Відправляємо підтвердження на електронну пошту
                 send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
-                
-                # Очищаємо кошик, якщо не Google Pay (для Google Pay кошик очищається після оплати)
                 return redirect('payment')
             
-            # Очищаємо кошик після успішного оформлення замовлення
             if 'cart' in request.session:
                 del request.session['cart']
                 request.session.modified = True
             
             send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
             
-            # Очищаємо кошик
-            if 'cart' in request.session:
-                del request.session['cart']
-                request.session.modified = True
-            
-            # Якщо користувач вибрав опцію збереження інформації
             if save_info:
                 user = request.user
                 user.first_name = first_name
@@ -253,7 +246,6 @@ def checkout(request):
                 user.email = email
                 user.save()
                 
-                # Зберігаємо додаткову інформацію в профілі користувача
                 try:
                     profile = user.profile
                     profile.phone_number = phone
@@ -262,20 +254,16 @@ def checkout(request):
                     profile.zip_code = zip_code
                     profile.save()
                 except:
-                    # Якщо профіль не існує, створюємо його
                     from users.models import Profile
                     profile = Profile(user=user, phone_number=phone, address=address, city=city, zip_code=zip_code)
                     profile.save()
                 
-            # Перенаправляємо на сторінку профілю з активною вкладкою історії замовлень
             messages.success(request, 'Ваше замовлення успішно оформлено! Підтвердження надіслано на вашу електронну пошту.')
             
-            # Додаємо JavaScript для очищення кошика на стороні клієнта
             response = redirect('profile')
-            response.set_cookie('active_tab', 'orders', max_age=30)  # Встановлюємо cookie для активації вкладки замовлень
+            response.set_cookie('active_tab', 'orders', max_age=30)
             return response
         else:
-            # Якщо форма невалідна, показуємо помилки
             for field, error in form_errors.items():
                 messages.error(request, f'{error}')
         

@@ -18,9 +18,9 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('email', 'first_name', 'last_name', 'role', 'is_staff', 'is_active')
     list_filter = ('role', 'is_staff', 'is_active')
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (_('Дані для входу'), {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name')}),
-        (_('Role'), {'fields': ('role',)}),
+        (_('Роль'), {'fields': ('role',)}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
@@ -56,9 +56,9 @@ class ReviewAdmin(admin.ModelAdmin):
     search_fields = ('user__email', 'service__name', 'comment')
     readonly_fields = ('created_at',)
     fieldsets = (
-        (None, {'fields': ('user', 'service')}),
-        (_('Review details'), {'fields': ('rating', 'comment')}),
-        (_('Dates'), {'fields': ('created_at',)}),
+        (_('Інформація про відгук'), {'fields': ('user', 'service')}),
+        (_('Деталі відгуку'), {'fields': ('rating', 'comment')}),
+        (_('Дата створення'), {'fields': ('created_at',)}),
     )
 
 # Відключаємо відображення моделі Group в адмін-панелі
