@@ -15,17 +15,14 @@ class RoleMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Process request before view is called
         if request.user.is_authenticated:
             current_url = resolve(request.path_info)
             
-            # Check admin access - only users with admin role can access user management
             if 'admin' in request.path and current_url.app_name == 'admin':
                 if request.user.role != 'admin' and not request.user.is_superuser:
                     messages.error(request, _('You do not have permission to access the admin area.'))
                     return redirect('home')
             
-            # Check manager access - only users with manager role can access service management
             if 'manager' in request.path and current_url.app_name == 'manager':
                 if request.user.role != 'manager' and not request.user.is_superuser:
                     messages.error(request, _('You do not have permission to access the manager area.'))

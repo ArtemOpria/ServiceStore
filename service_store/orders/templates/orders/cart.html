@@ -22,7 +22,6 @@
 <div class="container my-5">
     <div class="row">
         {% if cart_items %}
-        <!-- Таблиця з послугами в кошику -->
         <div class="col-lg-8">
             <table class="table cart-table">
                 <thead>
@@ -66,7 +65,6 @@
             </a>
         </div>
         {% else %}
-        <!-- Порожній кошик (центрований) -->
         <div class="col-12 d-flex justify-content-center align-items-center">
             <div class="empty-cart text-center py-5 my-4">
                 <i class="fas fa-shopping-cart fa-4x mb-4"></i>
@@ -80,7 +78,6 @@
         {% endif %}
         
         {% if cart_items %}
-        <!-- Блок з підсумками замовлення -->
         <div class="col-lg-4">
             <div class="cart-totals">
                 <h2>Підсумок замовлення</h2>
@@ -100,7 +97,6 @@
     </div>
 </div>
 
-<!-- CSS для анімації зміни суми -->
 <style>
     @keyframes highlight-change {
         0% { color: inherit; }
@@ -132,36 +128,28 @@
     }
 </style>
 
-<!-- JavaScript для функціоналу кошика -->
 <script src="{% static 'js/cart.js' %}"></script>
 <script>
     function updateQuantity(itemId, action) {
-        // Ensure itemId is a string for consistency
         itemId = String(itemId);
         
-        // Оновлення кількості послуги через функцію з cart.js
         const newQuantity = updateItemQuantity(itemId, action);
         
-        // Оновлення відображення кількості на сторінці
         const quantityInput = document.querySelector(`tr[data-item-id="${itemId}"] .cart-quantity-input`);
         if (quantityInput) {
             quantityInput.value = newQuantity;
         }
         
-        // Оновлення загальної суми для послуг
         const priceElement = document.querySelector(`tr[data-item-id="${itemId}"] .cart-product-price`);
         const totalElement = document.querySelector(`tr[data-item-id="${itemId}"] .cart-product-total`);
         if (priceElement && totalElement) {
-            // Ensure we're parsing a valid number by removing currency symbol and any whitespace
             const priceText = priceElement.textContent.replace('₴', '').trim();
-            const price = parseFloat(priceText) || 0; // Default to 0 if parsing fails
+            const price = parseFloat(priceText) || 0;
             
-            // Calculate total and format with 2 decimal places
             const total = price * newQuantity;
             totalElement.textContent = `₴${total.toFixed(2)}`;
         }
         
-        // Оновлення загальної суми замовлення
         updateOrderTotals();
     }
     
@@ -175,7 +163,6 @@
         
         updateOrderTotals();
         
-        // Перевірка, чи кошик порожній
         const cartTable = document.querySelector('.cart-table tbody');
         if (cartTable && cartTable.children.length === 0) {
             const rowContainer = document.querySelector('.row');
@@ -196,42 +183,32 @@
         }
     }
     
-    // Функція для оновлення загальної суми замовлення
     function updateOrderTotals() {
         let subtotal = 0;
         
         document.querySelectorAll('.cart-product-total').forEach(element => {
-            // Ensure we're parsing a valid number by removing currency symbol and any whitespace
             const priceText = element.textContent.replace('₴', '').trim();
-            const price = parseFloat(priceText) || 0; // Default to 0 if parsing fails
+            const price = parseFloat(priceText) || 0;
             subtotal += price;
         });
         
-        // Оновлення відображення суми з анімацією
         const totalElement = document.querySelector('.cart-totals-value');
         
         if (totalElement) {
-            // Format with 2 decimal places
             totalElement.textContent = `₴${subtotal.toFixed(2)}`;
-            
-            // Додаємо анімацію
             totalElement.classList.remove('price-updated');
-            void totalElement.offsetWidth; // Трюк для перезапуску анімації
+            void totalElement.offsetWidth;
             totalElement.classList.add('price-updated');
         }
         
-        // Update cart in session storage to match displayed values
         const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
         updateServerCart(cart);
     }
     
-    // Функція для очищення всього кошика та оновлення інтерфейсу
     function clearCartAndUpdateUI() {
         if (confirm('Ви впевнені, що хочете очистити кошик?')) {
-            // Очищення кошика через глобальну функцію з cart.js
             clearCart();
             
-            // Оновлення відображення - показуємо порожній кошик
             const rowContainer = document.querySelector('.row');
             if (rowContainer) {
                 rowContainer.innerHTML = `

@@ -72,18 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const step3 = document.getElementById('payment-step-3');
     
     confirmBtn.addEventListener('click', function() {
-        // Сховати крок 1 і показати крок 2 (обробка)
         step1.style.display = 'none';
         step2.style.display = 'block';
         
-        // Імітація обробки платежу (3 секунди)
         setTimeout(function() {
-            // Сховати крок 2 і показати крок 3 (успіх)
             step2.style.display = 'none';
             step3.style.display = 'block';
             
-            // Очищаємо кошик після успішної оплати
-            // Використовуємо fetch для виклику серверного методу очищення кошика
             fetch('/orders/update_cart/', {
                 method: 'POST',
                 headers: {
@@ -95,18 +90,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             });
             
-            // Оновлюємо іконку кошика, встановлюючи кількість товарів на 0
             if (typeof updateCartIcon === 'function') {
                 updateCartIcon(0);
                 
-                // Додатково оновлюємо відображення іконки кошика напряму
                 const cartBadge = document.querySelector('.cart-badge');
                 if (cartBadge) {
                     cartBadge.style.display = 'none';
                 }
             }
             
-            // Автоматичне перенаправлення на сторінку замовлення через 3 секунди
             setTimeout(function() {
                 window.location.href = document.querySelector('.payment-success a').getAttribute('href');
             }, 10000);

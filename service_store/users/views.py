@@ -5,6 +5,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from .forms import ProfileForm, CustomUserCreationForm, CustomAuthenticationForm
 from .models import Profile, CustomUser
+from orders.models import Order
 from functools import wraps
 
 
@@ -43,11 +44,10 @@ def user_login(request):
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('username')  # AuthenticationForm uses 'username' field for the identifier
+            email = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=email, password=password)
             if user is not None:
-                # Перевірка ролі користувача - адміністратори та менеджери не можуть входити через цю форму
                 if user.role in [CustomUser.ADMIN, CustomUser.MANAGER]:
                     messages.error(request, 'Для авторизації перейдіть на сторінку логіну адміністратора')
                     return redirect('login')
@@ -78,11 +78,8 @@ def profile(request):
     else:
         form = ProfileForm(instance=profile)
     
-    # Отримуємо замовлення користувача для вкладки історії замовлень
-    from orders.models import Order
     orders = Order.objects.filter(user=request.user).order_by('-order_date')
     
-    # Визначаємо активну вкладку (з URL-параметра або за замовчуванням)
     active_tab = request.GET.get('active_tab', 'personal')
     if active_tab not in ['personal', 'orders', 'settings']:
         active_tab = 'personal'
@@ -105,7 +102,6 @@ def password_change(request):
             user = form.save()
             update_session_auth_hash(request, user)
             messages.success(request, 'Ваш пароль успішно змінено!')
-            # Отримуємо замовлення користувача для вкладки історії замовлень
             from orders.models import Order
             orders = Order.objects.filter(user=request.user).order_by('-order_date')
             
@@ -113,7 +109,7 @@ def password_change(request):
                 'form': profile_form,
                 'password_change_form': form,
                 'orders': orders,
-                'active_tab': 'settings'  # Changed from 'password' to 'settings'
+                'active_tab': 'settings'
             })
         else:
             if 'old_password' in form.errors:
@@ -149,13 +145,11 @@ def password_change(request):
     else:
         form = PasswordChangeForm(request.user)
     
-    # Отримуємо замовлення користувача для вкладки історії замовлень
-    from orders.models import Order
     orders = Order.objects.filter(user=request.user).order_by('-order_date')
     
     return render(request, 'users/profile.html', {
         'form': profile_form,
         'password_change_form': form,
         'orders': orders,
-        'active_tab': 'settings'  # Changed from 'password' to 'settings'
+        'active_tab': 'settings',
     })

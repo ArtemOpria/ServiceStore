@@ -21,7 +21,6 @@ class Order(models.Model):
         ('cancelled', 'Скасовано'),
     ], default='pending', verbose_name='Статус')
 
-    # Інформація для доставки
     first_name = models.CharField(max_length=100, blank=True, verbose_name='Ім\'я')
     last_name = models.CharField(max_length=100, blank=True, verbose_name='Прізвище')
     email = models.EmailField(blank=True, verbose_name='Електронна пошта')
@@ -30,7 +29,6 @@ class Order(models.Model):
     city = models.CharField(max_length=100, blank=True, verbose_name='Місто')
     zip_code = models.CharField(max_length=20, blank=True, verbose_name='Поштовий індекс')
     
-    # Спосіб доставки та оплати
     delivery_method = models.CharField(max_length=20, choices=[
         ('nova_poshta', 'Нова Пошта'),
         ('ukr_poshta', 'Укрпошта'),
@@ -55,8 +53,6 @@ class Order(models.Model):
         super().save(*args, **kwargs)
     
     def generate_order_number(self):
-        # Генеруємо номер замовлення у форматі: YYYYMMDD-XXXXX
-        # де YYYYMMDD - поточна дата, XXXXX - випадкова послідовність символів
         date_str = timezone.now().strftime('%Y%m%d')
         random_str = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
         return f"{date_str}-{random_str}"

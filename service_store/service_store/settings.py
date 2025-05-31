@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'users.middleware.RoleMiddleware',  # Custom middleware for role-based access control
+    'users.middleware.RoleMiddleware',
 ]
 
 ROOT_URLCONF = 'service_store.urls'

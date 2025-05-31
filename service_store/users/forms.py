@@ -24,7 +24,6 @@ class CustomUserCreationForm(UserCreationForm):
         label='Прізвище',
         error_messages={'required': 'Це поле обов\'язкове.'}
     )
-    # Роль користувача встановлюється автоматично як 'user'
     password1 = forms.CharField(
         label='Пароль',
         widget=forms.PasswordInput(),
@@ -101,13 +100,11 @@ class ProfileForm(forms.ModelForm):
             self.fields['first_name'].initial = self.instance.user.first_name
             self.fields['last_name'].initial = self.instance.user.last_name
             
-        # Додаємо атрибут type="tel" для поля телефону
         self.fields['phone_number'].widget.attrs.update({'type': 'tel'})
     
     def save(self, commit=True):
         profile = super().save(commit=False)
         if commit:
-            # Зберігаємо зміни в полях користувача
             if 'first_name' in self.cleaned_data and 'last_name' in self.cleaned_data:
                 user = profile.user
                 user.first_name = self.cleaned_data['first_name']
