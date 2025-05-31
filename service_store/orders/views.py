@@ -18,27 +18,22 @@ def order_detail(request, order_id):
 
 @login_required_with_message(message="Для оплати замовлення необхідно увійти в акаунт.")
 def payment(request):
-    # Отримуємо ID замовлення з сесії
     order_id = request.session.get('order_id')
     if not order_id:
         messages.error(request, 'Замовлення не знайдено')
         return redirect('cart')
     
     try:
-        # Отримуємо замовлення з бази даних
         order = Order.objects.get(id=order_id, user=request.user)
         
-        # Перевіряємо, чи метод оплати - Google Pay
         if order.payment_method != 'googlepay':
             messages.error(request, 'Неправильний метод оплати')
             return redirect('order_detail', order_id=order.id)
         
-        # Очищаємо кошик в сесії
         if 'cart' in request.session:
             del request.session['cart']
             request.session.modified = True
         
-        # Відображаємо сторінку оплати
         return render(request, 'orders/payment.html', {'order': order})
     
     except Order.DoesNotExist:
@@ -68,7 +63,6 @@ def cart(request):
         
         total = subtotal
     
-    # Передаємо помилки форми в контекст, якщо вони є
     context = {
         'cart_items': cart_items,
         'subtotal': subtotal,
@@ -103,12 +97,10 @@ def checkout(request):
         
         total = subtotal
     
-    # Якщо кошик порожній, перенаправляємо на сторінку кошика
     if not cart_items:
         messages.warning(request, 'Ваш кошик порожній. Додайте послуги перед оформленням замовлення.')
         return redirect('cart')
     
-    # Отримуємо дані профілю користувача
     user_profile = None
     phone = ''
     address = ''
@@ -125,11 +117,9 @@ def checkout(request):
         pass
     
     if request.method == 'POST':
-        # Валідація форми
         form_valid = True
         form_errors = {}
         
-        # Отримання та валідація даних форми
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
         email = request.POST.get('email', '').strip()
@@ -141,7 +131,6 @@ def checkout(request):
         payment_method = request.POST.get('payment_method', '')
         save_info = 'save_info' in request.POST
         
-        # Перевірка обов'язкових полів
         if not first_name:
             form_valid = False
             form_errors['first_name'] = 'Це поле обов\'язкове'
@@ -181,7 +170,6 @@ def checkout(request):
             form_valid = False
             form_errors['payment_method'] = 'Оберіть спосіб оплати'
         
-        # Якщо форма валідна, створюємо замовлення
         if form_valid and cart_items:
             order = Order(
                 user=request.user,
@@ -199,7 +187,6 @@ def checkout(request):
             )
             order.save()
             
-            # Створюємо елементи замовлення
             for item in cart_items:
                 order_item = OrderItem(
                     order=order,
@@ -210,7 +197,6 @@ def checkout(request):
                 )
                 order_item.save()
             
-            # Відправляємо підтвердження на електронну пошту
             subject = 'Підтвердження замовлення'
             html_message = render_to_string('orders/email/order_confirmation.html', {
                 'user': request.user,

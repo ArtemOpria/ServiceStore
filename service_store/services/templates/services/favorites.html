@@ -63,7 +63,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add event listeners for add-to-cart buttons
         const addToCartButtons = document.querySelectorAll('.add-to-cart-icon');
         
         addToCartButtons.forEach(button => {
@@ -73,14 +72,10 @@
                 
                 const serviceId = this.getAttribute('data-service-id');
                 if (serviceId) {
-                    // Call the addToCart function from cart.js
                     addToCart(serviceId);
                 }
             });
         });
-        
-        // No need to add event listeners for favorite buttons here
-        // as they are already handled in favorites.js
     });
 </script>
 {% endblock %}

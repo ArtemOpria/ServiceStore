@@ -8,10 +8,8 @@ import os
 import subprocess
 from pathlib import Path
 
-# Отримуємо шлях до кореневої директорії проекту
 BASE_DIR = Path(__file__).resolve().parent
 
-# Шлях до директорії з перекладами
 LOCALE_DIR = os.path.join(BASE_DIR, 'locale')
 
 def compile_messages():
@@ -20,13 +18,11 @@ def compile_messages():
     """
     print("Компіляція файлів перекладів...")
     
-    # Перевіряємо, чи існує директорія locale
     if not os.path.exists(LOCALE_DIR):
         print(f"Директорія {LOCALE_DIR} не існує. Створюємо...")
         os.makedirs(LOCALE_DIR)
     
     try:
-        # Запускаємо команду компіляції
         result = subprocess.run(
             ['django-admin', 'compilemessages'],
             cwd=BASE_DIR,

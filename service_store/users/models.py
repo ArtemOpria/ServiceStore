@@ -52,8 +52,8 @@ class CustomUser(AbstractUser):
     last_name = models.CharField(_('last name'), max_length=100)
     role = models.CharField(_('role'), max_length=20, choices=ROLE_CHOICES, default=USER)
 
-    USERNAME_FIELD = 'email'  # Set email as the authentication field
-    REQUIRED_FIELDS = ['first_name', 'last_name']  # Required fields for createsuperuser
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     objects = CustomUserManager()
 

@@ -43,19 +43,16 @@ def service_list(request):
     services = Service.objects.all()
     categories = Category.objects.all()
     
-    # Фільтрація за категоріями
     category_ids = request.GET.getlist('category')
     if category_ids:
         services = services.filter(categories__id__in=category_ids).distinct()
     
-    # Сортування
     sort_by = request.GET.get('sort', 'default')
     if sort_by == 'price_asc':
         services = services.order_by('price')
     elif sort_by == 'price_desc':
         services = services.order_by('-price')
     
-    # Пагінація
     items_per_page = request.GET.get('items_per_page', 9)
     try:
         items_per_page = int(items_per_page)
@@ -72,19 +69,14 @@ def service_list(request):
     except ValueError:
         page = 1
     
-    # Розрахунок індексів для слайсингу
     start_index = (page - 1) * items_per_page
     end_index = start_index + items_per_page
     
-    # Загальна кількість елементів та сторінок
     total_services = services.count()
     total_pages = (total_services + items_per_page - 1) // items_per_page
     
-    # Слайсинг подій для поточної сторінки
     services_page = services[start_index:end_index]
     
-    # Створення списку сторінок для пагінації
-    # Показуємо максимум 5 сторінок навколо поточної
     if total_pages <= 5:
         page_range = range(1, total_pages + 1)
     else:
@@ -131,7 +123,6 @@ def service_detail(request, service_id):
             from .forms import ReviewForm
             from django.http import QueryDict
             
-            # Створюємо QueryDict для правильної валідації форми
             post_data = QueryDict('', mutable=True)
             post_data.update({
                 'rating': data.get('rating'),
@@ -165,7 +156,6 @@ def service_detail(request, service_id):
             review.delete()
             return JsonResponse({'status': 'success'})
     
-    # Розрахунок середнього рейтингу
     avg_rating = 0
     star_list = ['empty'] * 5
 
@@ -210,7 +200,6 @@ def toggle_favorite(request, service_id):
         user.favorite_services.add(service)
         is_favorite = True
     
-    # Get the count of favorite services for the user
     favorite_count = user.favorite_services.count()
     
     return JsonResponse({
@@ -233,7 +222,6 @@ def check_auth_for_cart(request, service_id):
             'message': "Для додавання послуги до кошика необхідно увійти в акаунт."
         })
     
-    # Якщо користувач авторизований, повертаємо успішну відповідь
     return JsonResponse({
         'status': 'success',
         'is_authenticated': True

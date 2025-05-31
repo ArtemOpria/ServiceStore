@@ -9,7 +9,7 @@ class RoleRequiredMixin(UserPassesTestMixin):
     """
     Mixin to restrict view access based on user role.
     """
-    required_role = None  # Should be set to 'admin' or 'manager'
+    required_role = None
     permission_denied_message = _('You do not have permission to access this page.')
     login_url = reverse_lazy('login')
     
@@ -17,11 +17,9 @@ class RoleRequiredMixin(UserPassesTestMixin):
         if not self.request.user.is_authenticated:
             return False
         
-        # If no specific role is required, just check if user is authenticated
         if self.required_role is None:
             return True
             
-        # Check if user has the required role
         return self.request.user.role == self.required_role
     
     def handle_no_permission(self):

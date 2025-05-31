@@ -46,7 +46,6 @@
                         <input type="hidden" name="sort" value="{{ request.GET.sort|default:'default' }}">
                         <input type="hidden" name="items_per_page" value="{{ request.GET.items_per_page|default:'9' }}">
 
-                        <!-- Додаємо кнопку фільтрації тут -->
                         <div class="filter-action mt-3">
                             <span id="selected-filters-count" class="me-2">Послуги: {{ total_services }}</span>
                             <button type="submit" id="show-results-btn" class="btn btn-primary">Показати</button>
@@ -163,7 +162,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add event listeners for add-to-cart buttons
         const addToCartButtons = document.querySelectorAll('.add-to-cart-icon');
         
         addToCartButtons.forEach(button => {
@@ -173,7 +171,6 @@
                 
                 const serviceId = this.getAttribute('data-service-id');
                 if (serviceId) {
-                    // Call the addToCart function from cart.js
                     addToCart(serviceId);
                 }
             });

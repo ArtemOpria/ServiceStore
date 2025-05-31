@@ -14,13 +14,11 @@ def update_cart(request):
         data = json.loads(request.body)
         action = data.get('action', None)
         
-        # Prepare response data
         response_data = {
             'status': 'success',
             'is_authenticated': request.user.is_authenticated
         }
         
-        # Якщо дія - очистити кошик
         if action == 'clear':
             if 'cart' in request.session:
                 del request.session['cart']
@@ -31,30 +29,21 @@ def update_cart(request):
         cart_data = data.get('cart', {})
         check_auth = data.get('check_auth', False)
         
-        # If this is an authentication check request
         if check_auth:
-            # Add authentication status to response
             if request.user.is_authenticated:
-                # Check if user has items in their session cart
                 has_server_cart = 'cart' in request.session and bool(request.session['cart'])
                 response_data['has_server_cart'] = has_server_cart
                 
-                # If user has server cart, include it in the response
                 if has_server_cart:
                     response_data['cart'] = request.session['cart']
             
-            # For non-authenticated users or if not checking auth, just update the cart
             else:
-                # Only update session for anonymous users if they're on service pages
-                # This prevents cart persistence after logout
                 request.session['cart'] = cart_data
                 request.session.modified = True
         else:
-            # Regular cart update (not an auth check)
             request.session['cart'] = cart_data
             request.session.modified = True
             
-            # Include total items in response
             total_items = sum(cart_data.values())
             response_data['total_items'] = total_items
         

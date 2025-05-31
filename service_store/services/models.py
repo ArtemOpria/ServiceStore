@@ -41,7 +41,6 @@ class Service(models.Model):
         verbose_name = 'Послуга'
         verbose_name_plural = 'Послуги'
         
-    # Вкладки для адмін-панелі
     class Admin:
         fieldsets = [
             ('Інформація про послугу', {'fields': ['name', 'description', 'price', 'image', 'is_active']}),

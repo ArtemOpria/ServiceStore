@@ -34,7 +34,6 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
 
 
-# Create separate admin sites
 class AdminSiteForAdmins(AdminSite):
     site_header = _('Administrator Portal')
     site_title = _('Administrator Portal')
@@ -45,11 +44,9 @@ class AdminSiteForManagers(AdminSite):
     site_title = _('Manager Portal')
     index_title = _('Service Management')
 
-# Create instances of admin sites
 admin_site = AdminSiteForAdmins(name='admin_site')
 manager_site = AdminSiteForManagers(name='manager_site')
 
-# Створюємо клас адміністратора для відгуків
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('user', 'service', 'rating', 'created_at')
     list_filter = ('rating', 'created_at')
@@ -61,20 +58,9 @@ class ReviewAdmin(admin.ModelAdmin):
         (_('Дата створення'), {'fields': ('created_at',)}),
     )
 
-# Відключаємо відображення моделі Group в адмін-панелі
 admin.site.unregister(Group)
-
-# Register models with the default admin site
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Review, ReviewAdmin)
-
-# Register models with custom admin sites
 admin_site.register(CustomUser, CustomUserAdmin)
 admin_site.register(Review, ReviewAdmin)
-
-# Менеджери не мають доступу до керування користувачами
-# Тут можна зареєструвати інші моделі, до яких менеджери повинні мати доступ
 manager_site.register(Review, ReviewAdmin)
-
-# Note: Other models that managers should manage would be registered with manager_site
-# Example: manager_site.register(OtherModel, OtherModelAdmin)

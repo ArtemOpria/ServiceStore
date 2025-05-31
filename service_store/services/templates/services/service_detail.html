@@ -28,15 +28,10 @@
 <div class="container py-4">
     {% csrf_token %}
     <div class="row g-4">
-        <!-- Галерея зображень -->
         <div class="col-md-6 border-5">
             <div class="product-gallery d-flex shadow-sm rounded p-3 bg-white ">
-                <!-- Вертикальні мініатюри зліва -->
                 <div class="gallery-thumbnails me-3">
-                    <!-- Основне зображення як перша мініатюра -->
                     <img src="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" class="gallery-thumbnail active rounded" data-src="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" alt="{{ service.name }} - основне зображення">
-                    
-                    <!-- Додаткові зображення з галереї -->
                     {% if gallery_images %}
                         {% for image in gallery_images|slice:":3" %}
                             {% if image.image and image.image.url|file_exists %}
@@ -45,21 +40,18 @@
                         {% endfor %}
                     {% endif %}
                 </div>
-                <!-- Основне зображення -->
                 <div class="gallery-main">
                     <img src="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" class="gallery-main-image rounded gallery-image" id="main-product-image" alt="{{ service.name }}" data-image-id="main" data-image-url="{% if service.image and service.image.url|file_exists %}{{ service.image.url }}{% else %}{% static 'images/service_placeholder.avif' %}{% endif %}" data-image-title="{{ service.name }}">
                 </div>
             </div>
         </div>
         
-        <!-- Інформація про продукт -->
         <div class="col-md-6">
             <div class="card shadow-md border-0 h-100">
                 <div class="card-body">
                     <h1 class="product-title fw-bold">{{ service.name }}</h1>
                     <div class="product-price fs-3 fw-bold mb-3">{{ service.price }} грн</div>
                     
-                    <!-- Рейтинг -->
                     <div class="product-rating mb-3">
                         {% if reviews_count > 0 %}
                             {% for star in star_list %}
@@ -80,12 +72,10 @@
                         {% endif %}
                     </div>
                     
-                    <!-- Короткий опис -->
                     <div class="product-description mb-4">
                         {{ service.description|truncatewords:30 }}
                     </div>
             
-            <!-- Кнопки дій -->
             <div class="product-actions d-flex justify-content-center gap-3 mb-4">
                 <div class="quantity-control">
                     <button class="quantity-btn btn" id="decrease-quantity">-</button>
@@ -103,9 +93,7 @@
                 </button>
             </div>
             
-            <!-- Мета-інформація -->
             <div class="product-meta pt-3 border-top">
-                <!-- Категорія -->
                 <div class="product-category mb-3">
                     <span class="fw-bold">Категорія:</span> 
                     {% if service.categories.all %}
@@ -117,7 +105,6 @@
                     {% endif %}
                 </div>
                 
-                <!-- Соціальні мережі -->
                 <div class="product-share d-flex align-items-center gap-2">
                     <span class="fw-bold">Поділитися:</span>
                     <div class="social-icons d-flex gap-2">
@@ -134,12 +121,10 @@
     </div>
 </div>
 
-    <!-- Детальна інформація з табами -->
     <div class="row mt-5">
         <div class="col-12">
             <div class="card shadow-md border-1">
                 <div class="card-body p-0">
-                    <!-- Таби -->
                     <ul class="nav nav-tabs product-tabs" id="productTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Опис</button>
@@ -149,9 +134,7 @@
                         </li>
                     </ul>
                     
-                    <!-- Вміст табів -->
                     <div class="tab-content p-4" id="productTabsContent">
-                        <!-- Таб з описом -->
                         <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
                             <div class="product-full-description">
                                 <h3 class="mb-4">Детальний опис послуги</h3>
@@ -201,7 +184,6 @@
                             </div>
                         </div>
                         
-                        <!-- Таб з відгуками -->
                         <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                             <div class="reviews-section">
                                 <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded shadow-sm border">
@@ -211,7 +193,6 @@
                                     {% endif %}
                                 </div>
                                 
-                                <!-- Форма для додавання/редагування відгуку -->
                                 {% if user.is_authenticated %}
                                 <div class="review-form-container mb-4 p-4 border rounded shadow-sm bg-white" id="review-form-container" style="display: none;">
                                     <h4 class="mb-3 fw-bold" id="review-form-title"><i class="fas fa-pen-fancy me-2 text-primary"></i>Залишити відгук</h4>
@@ -243,7 +224,6 @@
                                 </div>
                                 {% endif %}
                                 
-                                <!-- Список відгуків -->
                                 <div class="reviews-list">
                                     {% if reviews %}
                                         {% for review in reviews %}
@@ -300,7 +280,6 @@
         <div class="col-12">
             <div class="row g-3 gallery-additional">
                 {% if gallery_images %}
-                    <!-- Спочатку показуємо основне зображення послуги -->
                     {% if service.image and service.image.url|file_exists %}
                         <div class="col-md-3 col-6">
                             <div class="gallery-item">
@@ -309,7 +288,6 @@
                         </div>
                     {% endif %}
                     
-                    <!-- Потім показуємо додаткові зображення з галереї -->
                     {% for image in gallery_images %}
                         {% if image.image and image.image.url|file_exists %}
                             <div class="col-md-3 col-6">
@@ -320,7 +298,6 @@
                         {% endif %}
                     {% endfor %}
                 {% else %}
-                    <!-- Якщо немає додаткових зображень, показуємо основне зображення послуги -->
                     {% if service.image and service.image.url|file_exists %}
                         <div class="col-md-3 col-6">
                             <div class="gallery-item">
@@ -328,7 +305,6 @@
                             </div>
                         </div>
                     {% else %}
-                        <!-- Якщо немає жодного зображення, показуємо повідомлення -->
                         <div class="col-12">
                             <div class="alert alert-light rounded shadow-sm p-4 text-center border">
                                 <i class="far fa-images fa-3x mb-3 text-muted"></i>
