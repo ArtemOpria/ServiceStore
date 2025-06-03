@@ -48,7 +48,7 @@
                 <button type="submit" class="btn btn-primary auth-button">Увійти</button>
             </form>
             <p class="auth-link">Немає акаунту? <a href="{% url 'register' %}">Зареєструватися</a></p>
-            <p class="auth-link">Адміністратор? <a href="/admin/">Увійти як адміністратор</a></p>
+            <p class="auth-link">Менеджер? <a href="/admin/">Увійти як менеджер</a></p>
             {% if messages %}
                 <div class="messages-container">
                     {% for message in messages %}
